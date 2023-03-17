@@ -4,8 +4,13 @@ from embedding_explorer.app import get_dash_app
 from embedding_explorer.blueprints.app import create_blueprint
 from embedding_explorer.prepare.gensim import prepare_keyed_vectors
 
+# Download vectors if need be
+# from gensim import downloader
+# keyed_vectors = downloader.load("glove-twitter-50")
+# keyed_vectors.save("dat/vectors.gensim")
+
 print("Loading emebddings")
-keyed_vectors = KeyedVectors.load("vectors.gensim")
+keyed_vectors = KeyedVectors.load("dat/vectors.gensim")
 
 vocab, embeddings = prepare_keyed_vectors(keyed_vectors)
 

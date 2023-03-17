@@ -1,8 +1,14 @@
 """Plotting utilities for networks."""
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import plotly.graph_objects as go
+from plotly.express.colors import cyclical, sample_colorscale
+
+from embedding_explorer.prepare.semkern import (SemanticKernel,
+                                                calculate_n_connections,
+                                                calculate_positions,
+                                                get_closest_seed)
 
 
 def _edge_pos(edges: np.ndarray, x_y: np.ndarray) -> np.ndarray:
@@ -89,18 +95,20 @@ def create_node_trace(
     else:
         size = np.full(x.shape, size)
     indices = np.arange(len(x))
+    if labels is None:
+        labels = indices.tolist()
     node_trace = go.Scatter(
         x=x,
         y=y,
         mode=display_mode,
         hoverinfo="text",
-        text=labels or indices,
+        text=labels,
         textposition=textposition,
         marker={
             "color": color,
             "size": size,
             "colorbar": {"title": colorbar_title},
-            "colorscale": "Rainbow",
+            "colorscale": "Peach",
         },
         customdata=indices,
     )
@@ -216,73 +224,94 @@ def create_annotations(
     return annotations
 
 
-def network_figure(
-    node_x: np.ndarray,
-    node_y: np.ndarray,
-    edges: np.ndarray,
-    node_labels: Optional[List[str]] = None,
-    node_size: Union[np.ndarray, float] = 10.0,
-    node_color: Union[np.ndarray, str] = "red",
-    edge_weight: Union[np.ndarray, float] = 0.5,
-    edge_color: Union[np.ndarray, str] = "#888",
-    colorbar_title: str = "",
-):
-    """Produces network figure based on information about nodes and edges
-    in a graph.
-
-    Parameters
-    ----------
-    node_x: array of shape (n_nodes, )
-        X position of nodes.
-    node_y: array of shape (n_nodes, )
-        Y position of nodes.
-    edges: array of shape (n_edges, 2)
-        Describes edges in form of pairs of node indices.
-    node_labels: list of str or None, default None
-        Labels to assign to each node, if not specified,
-        node indices will be displayed.
-    node_size: darray of shape (n_nodes,) or float, default 10
-        Sizes of the nodes, if an array, different sizes will
-        be used for each annotation.
-    node_color: darray of shape (n_nodes,) or str, default "#ffb8b3"
-        Specifies what color the nodes should be, if an array,
-        different colors will be assigned to nodes based on a color scheme.
-    edge_weight: darray of shape (n_edges,) or float, default 0.5
-        Specifies the thickness of the edges connecting the nodes in the graph.
-        If an array, different thicknesses will be used for each edge.
-    edge_color: ndarray of shape (n-edges,) or str, default "#888"
-        Specifies what color the edges should be, if an array,
-        different colors will be assigned to edges based on a color scheme.
-
-    Returns
-    -------
-    go.Figure
-        Plotly figure of a network.
-    """
-    # Creating node trace for the network
-    node_trace = create_node_trace(
-        node_x,
-        node_y,
-        labels=node_labels,
-        color=node_color,
-        size=node_size,
-        colorbar_title=colorbar_title,
+def get_seed_colors(kernel: SemanticKernel) -> np.ndarray:
+    """Returns array of RGB colors for each seed."""
+    n_seeds = np.sum(kernel.priorities == 0)
+    samplepoints = np.arange(n_seeds) / n_seeds
+    colors = sample_colorscale(
+        colorscale=cyclical.Phase, samplepoints=samplepoints
     )
-    # Creating edge trace lines
-    edge_traces = create_edge_traces(
-        node_x, node_y, edges, width=edge_weight, color=edge_color
+    return np.array(colors)
+
+
+def create_node_traces(
+    kernel: SemanticKernel, x: np.ndarray, y: np.ndarray
+) -> Tuple[go.Scatter, go.Scatter, go.Scatter]:
+    """Creates node traces for the different levels of association."""
+    closest_seed = get_closest_seed(kernel)
+    scale = get_seed_colors(kernel)
+    is_seed = kernel.priorities == 0
+    sizes = calculate_n_connections(kernel.connections)
+    sizes = (sizes / np.max(sizes)) * 60
+    seed_trace = go.Scatter(
+        name="Seeds",
+        text=kernel.vocabulary[is_seed],
+        x=x[is_seed],
+        y=y[is_seed],
+        mode="markers+text",
+        hoverinfo="text",
+        marker=dict(
+            color=scale[closest_seed[is_seed]], size=sizes[is_seed], opacity=1
+        ),
+        textfont=dict(size=12, color="white"),
     )
-    # Making figure
-    fig = go.Figure(
-        data=[*edge_traces, node_trace],
-        layout=go.Layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            titlefont_size=16,
-            showlegend=False,
-            margin=dict(b=20, l=5, r=5, t=40),
-            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+    is_first_level = kernel.priorities == 1
+    first_level_trace = go.Scatter(
+        name="First Level Association",
+        text=kernel.vocabulary[is_first_level],
+        x=x[is_first_level],
+        y=y[is_first_level],
+        mode="markers+text",
+        hoverinfo="text",
+        marker=dict(
+            color=scale[closest_seed[is_first_level]],
+            size=sizes[is_first_level],
+            opacity=0.6,
         ),
     )
-    return fig
+    is_second_level = kernel.priorities == 2
+    second_level_trace = go.Scatter(
+        name="Second Level Association",
+        text=kernel.vocabulary[is_second_level],
+        x=x[is_second_level],
+        y=y[is_second_level],
+        mode="markers+text",
+        hoverinfo="text",
+        marker=dict(
+            color=scale[closest_seed[is_second_level]],
+            size=sizes[is_second_level],
+            opacity=0.4,
+        ),
+    )
+    return second_level_trace, first_level_trace, seed_trace
+
+
+def plot_semantic_kernel(kernel: SemanticKernel) -> go.Figure:
+    """Plots semantic kernel."""
+    x, y = calculate_positions(kernel.distance_matrix)
+
+    node_traces = create_node_traces(x=x, y=y, kernel=kernel)
+    edge_traces = create_edge_traces(x=x, y=y, edges=kernel.connections)
+
+    figure = go.Figure(data=[*node_traces, *edge_traces])
+    figure.update_xaxes(
+        showticklabels=False,
+        title="",
+        gridcolor="#e5e7eb",
+        linecolor="#f9fafb",
+        linewidth=6,
+        mirror=True,
+        zerolinewidth=2,
+        zerolinecolor="#d1d5db",
+    )
+    figure.update_yaxes(
+        showticklabels=False,
+        title="",
+        gridcolor="#e5e7eb",
+        linecolor="#f9fafb",
+        mirror=True,
+        linewidth=6,
+        zerolinewidth=2,
+        zerolinecolor="#d1d5db",
+    )
+    return figure
