@@ -16,16 +16,12 @@ def create_blueprint(
     # --------[ Collecting blueprints ]--------
     word_selector = create_word_selector(vocab=vocab)
     first_level_slider = create_slider(
-        label="First level association",
         component_id="first_level_association",
-        gradient={"from": "cyan", "to": "teal", "deg": 105},
-        slider_color="teal",
+        slider_color="blue",
     )
     second_level_slider = create_slider(
-        label="Second level association",
         component_id="second_level_association",
-        gradient={"from": "teal", "to": "green", "deg": 105},
-        slider_color="green",
+        slider_color="indigo",
     )
     network = create_network(vocab=vocab, embeddings=embeddings)
     blueprints = [
@@ -39,15 +35,45 @@ def create_blueprint(
     app_blueprint = DashBlueprint()
     app_blueprint.layout = html.Div(
         [
-            word_selector.layout,
             html.Div(network.layout, className="flex-1 bg-red"),
-            dmc.Group(
+            dmc.Stack(
                 [
-                    first_level_slider.layout,
-                    second_level_slider.layout,
+                    dmc.Center(),
+                    dmc.Grid(
+                        [
+                            dmc.Col(word_selector.layout, span=6, offset=2),
+                            dmc.Col(
+                                dmc.Badge(
+                                    "First level association:",
+                                    size="xl",
+                                    variant="gradient",
+                                    fullWidth=True,
+                                    gradient={"from": "indigo", "to": "blue"},
+                                ),
+                                span=1,
+                                offset=2,
+                            ),
+                            dmc.Col(first_level_slider.layout, span=5),
+                            dmc.Col(
+                                dmc.Badge(
+                                    "Second level association:",
+                                    size="xl",
+                                    variant="gradient",
+                                    fullWidth=True,
+                                    gradient={"from": "blue", "to": "indigo"},
+                                ),
+                                span=1,
+                                offset=2,
+                            ),
+                            dmc.Col(second_level_slider.layout, span=5),
+                        ],
+                        gutter="lg",
+                        columns=10,
+                        align="stretch",
+                    ),
                 ],
-                grow=True,
-                spacing=3,
+                spacing="lg",
+                className="p-8",
             ),
         ],
         className="""

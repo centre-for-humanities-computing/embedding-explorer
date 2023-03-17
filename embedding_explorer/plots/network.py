@@ -244,7 +244,7 @@ def create_node_traces(
     sizes = calculate_n_connections(kernel.connections)
     sizes = (sizes / np.max(sizes)) * 60
     seed_trace = go.Scatter(
-        name="Seeds",
+        name="",
         text=kernel.vocabulary[is_seed],
         x=x[is_seed],
         y=y[is_seed],
@@ -257,7 +257,7 @@ def create_node_traces(
     )
     is_first_level = kernel.priorities == 1
     first_level_trace = go.Scatter(
-        name="First Level Association",
+        name="",
         text=kernel.vocabulary[is_first_level],
         x=x[is_first_level],
         y=y[is_first_level],
@@ -271,7 +271,7 @@ def create_node_traces(
     )
     is_second_level = kernel.priorities == 2
     second_level_trace = go.Scatter(
-        name="Second Level Association",
+        name="",
         text=kernel.vocabulary[is_second_level],
         x=x[is_second_level],
         y=y[is_second_level],
@@ -293,7 +293,7 @@ def plot_semantic_kernel(kernel: SemanticKernel) -> go.Figure:
     node_traces = create_node_traces(x=x, y=y, kernel=kernel)
     edge_traces = create_edge_traces(x=x, y=y, edges=kernel.connections)
 
-    figure = go.Figure(data=[*node_traces, *edge_traces])
+    figure = go.Figure(data=[*edge_traces, *node_traces])
     figure.update_xaxes(
         showticklabels=False,
         title="",
@@ -314,4 +314,5 @@ def plot_semantic_kernel(kernel: SemanticKernel) -> go.Figure:
         zerolinewidth=2,
         zerolinecolor="#d1d5db",
     )
+    figure.update_layout(paper_bgcolor="white", plot_bgcolor="white")
     return figure

@@ -49,6 +49,7 @@ def create_network(
         figure = plot_semantic_kernel(kernel)
         figure.update(layout_coloraxis_showscale=False)
         figure.update_traces(marker_showscale=False)
+        figure.update_layout(dragmode="pan")
         return figure
 
     return network
