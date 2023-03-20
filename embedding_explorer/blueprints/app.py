@@ -15,19 +15,9 @@ def create_blueprint(
 ) -> DashBlueprint:
     # --------[ Collecting blueprints ]--------
     word_selector = create_word_selector(vocab=vocab)
-    first_level_slider = create_slider(
-        component_id="first_level_association",
-        slider_color="blue",
-    )
-    second_level_slider = create_slider(
-        component_id="second_level_association",
-        slider_color="indigo",
-    )
     network = create_network(vocab=vocab, embeddings=embeddings)
     blueprints = [
         word_selector,
-        first_level_slider,
-        second_level_slider,
         network,
     ]
 
@@ -36,44 +26,50 @@ def create_blueprint(
     app_blueprint.layout = html.Div(
         [
             html.Div(network.layout, className="flex-1 bg-red"),
-            dmc.Stack(
+            html.Div(
                 [
-                    dmc.Center(),
-                    dmc.Grid(
-                        [
-                            dmc.Col(word_selector.layout, span=6, offset=2),
-                            dmc.Col(
-                                dmc.Badge(
-                                    "First level association:",
-                                    size="xl",
-                                    variant="gradient",
-                                    fullWidth=True,
-                                    gradient={"from": "indigo", "to": "blue"},
-                                ),
-                                span=1,
-                                offset=2,
-                            ),
-                            dmc.Col(first_level_slider.layout, span=5),
-                            dmc.Col(
-                                dmc.Badge(
-                                    "Second level association:",
-                                    size="xl",
-                                    variant="gradient",
-                                    fullWidth=True,
-                                    gradient={"from": "blue", "to": "indigo"},
-                                ),
-                                span=1,
-                                offset=2,
-                            ),
-                            dmc.Col(second_level_slider.layout, span=5),
-                        ],
-                        gutter="lg",
-                        columns=10,
-                        align="stretch",
+                    word_selector.layout,
+                    dmc.NumberInput(
+                        label="First level association",
+                        description="Number of closest words to find"
+                        "to the given seeds.",
+                        value=5,
+                        min=0,
+                        stepHoldDelay=500,
+                        stepHoldInterval=100,
+                        id="first_level_association",
+                        size="lg",
+                    ),
+                    dmc.NumberInput(
+                        label="Second level association",
+                        description="Number of closest words to find to words"
+                        "found in the first level association.",
+                        value=5,
+                        min=0,
+                        stepHoldDelay=500,
+                        stepHoldInterval=100,
+                        id="second_level_association",
+                        size="lg",
+                    ),
+                    html.Button(
+                        "Submit",
+                        className="""
+                        rounded-xl text-white text-bold text-lg
+                        p-3 mt-5
+                        transition-all duration-200 bg-gradient-to-bl
+                        from-cyan-500 via-blue-500 to-blue-400 bg-size-200
+                        hover:font-bold font-normal
+                        """,
+                        id="submit_button",
                     ),
                 ],
-                spacing="lg",
-                className="p-8",
+                className="""
+                fixed w-1/3 bottom-8 right-8
+                bg-white shadow-2xl rounded-xl
+                p-7 flex-col flex space-y-4
+                hover:opacity-100 opacity-75
+                transition-all duration-500
+                """,
             ),
         ],
         className="""

@@ -1,6 +1,7 @@
 """Code for the word selector component."""
 from typing import List
 
+import dash_mantine_components as dmc
 import numpy as np
 from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
                                     exceptions)
@@ -18,20 +19,22 @@ def create_word_selector(vocab: np.ndarray) -> DashBlueprint:
     word_selector = DashBlueprint()
     vocab_lookup = {word: index for index, word in enumerate(vocab)}
 
-    word_selector.layout = dcc.Dropdown(
+    word_selector.layout = dmc.MultiSelect(
+        label="Seeds",
+        description="Select words that are going to be used as"
+        "the basis of semantic association.",
         id="word_selector",
-        placeholder="Select words...",
+        placeholder="Search for words...",
         value=[],
-        options=[],
-        multi=True,
+        data=[],
         searchable=True,
-        className="min-w-max flex-1 text-xl ",
         clearable=True,
+        size="lg",
     )
 
     @word_selector.callback(
-        Output("word_selector", "options"),
-        Input("word_selector", "search_value"),
+        Output("word_selector", "data"),
+        Input("word_selector", "searchValue"),
         State("word_selector", "value"),
     )
     def update_options(

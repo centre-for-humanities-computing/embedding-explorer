@@ -42,186 +42,24 @@ def _edge_pos(edges: np.ndarray, x_y: np.ndarray) -> np.ndarray:
     padded[:, :-1] = end_node_positions
     # That we fill up with NaNs
     padded[:, -1] = np.nan
-    return padded  # .flatten()
+    return padded.flatten()
 
 
-def create_node_trace(
-    x: np.ndarray,
-    y: np.ndarray,
-    labels: Optional[List[str]] = None,
-    color: Union[np.ndarray, str] = "#ffb8b3",
-    size: Union[np.ndarray, float] = 10,
-    display_mode: str = "markers+text",
-    textposition: Optional[str] = None,
-    colorbar_title: str = "",
-    max_size: int = 50,
+def create_edge_trace(
+    x: np.ndarray, y: np.ndarray, edges: np.ndarray
 ) -> go.Scatter:
-    """
-    Draws a trace of nodes for a plotly network.
-
-    Parameters
-    ----------
-    x: ndarray of shape (n_nodes,)
-        x coordinates of nodes
-    y: ndarray of shape (n_nodes,)
-        y coordinates of nodes
-    labels: list of str or None, default None
-        Labels to assign to each node, if not specified,
-        node indices will be displayed.
-    size: ndarray of shape (n_nodes,) or float, default 10
-        Sizes of the nodes, if an array, different sizes will
-        be used for each annotation.
-    color: ndarray of shape (n_nodes,) or str, default "#ffb8b3"
-        Specifies what color the nodes should be, if an array,
-        different colors will be assigned to nodes based on a color scheme.
-    display_mode: str, default "markers"
-        Specifies how the nodes should be displayed,
-        consult Plotly documentation for further details
-    textposition: str or None, default None
-        Specifies how text should be positioned on the graph,
-        consult Plotly documentation for further details
-    max_size: int, default 20
-        Maximal size of nodes.
-
-    Returns
-    ----------
-    node_trace: go.Scatter
-        Nodes for the graph drawn by plotly.
-    """
-    if not isinstance(size, float) and not isinstance(size, int):
-        # Normalize size
-        size_norm = np.linalg.norm(size, np.inf)
-        size = (size / size_norm) * max_size + 5
-    else:
-        size = np.full(x.shape, size)
-    indices = np.arange(len(x))
-    if labels is None:
-        labels = indices.tolist()
-    node_trace = go.Scatter(
-        x=x,
-        y=y,
-        mode=display_mode,
-        hoverinfo="text",
-        text=labels,
-        textposition=textposition,
-        marker={
-            "color": color,
-            "size": size,
-            "colorbar": {"title": colorbar_title},
-            "colorscale": "Peach",
-        },
-        customdata=indices,
-    )
-    return node_trace  # type: ignore
-
-
-def create_edge_traces(
-    x: np.ndarray,
-    y: np.ndarray,
-    edges: np.ndarray,
-    width: Union[np.ndarray, float] = 0.5,
-    color: Union[np.ndarray, str] = "#888",
-    max_width: int = 5,
-) -> go.Figure:
-    """
-    Draws traces of edges for a plotly network.
-
-    Parameters
-    ----------
-    x: ndarray of shape (n_nodes,)
-        x coordinates of nodes
-    y: ndarray of shape (n_nodes,)
-        y coordinates of nodes
-    edges: ndarray of shape (n_edges, 2) or None
-        A matrix describing which nodes in the graph should be connected.
-        Each row describes one connection with the indices of the two nodes.
-        If not specified, a fully connected graph will be used.
-    width: ndarray of shape (n_edges,) or float, default 0.5
-        Specifies the thickness of the edges connecting the nodes in the graph.
-        If an array, different thicknesses will be used for each edge.
-    color: ndarray of shape (n-edges,) or str, default "#888"
-        Specifies what color the edges should be, if an array,
-        different colors will be assigned to edges based on a color scheme.
-    max_width: int, default 5
-        Maximum width of edges.
-
-    Returns
-    -------
-    edge_trace: list of graph objects
-        Edges for the graph drawn by plotly.
-    """
     x_edges = _edge_pos(edges, x)
     y_edges = _edge_pos(edges, y)
-    n_edges = edges.shape[0]
-    indices = np.arange(n_edges)
-    if isinstance(width, int) or isinstance(width, float):
-        width = np.full(n_edges, width)
-    else:
-        size_norm = np.linalg.norm(width, 4)
-        width = (width / size_norm) * max_width + 1
-    if isinstance(color, str):
-        color = np.full(n_edges, color)
-    edge_trace = [
-        go.Scatter(
-            x=x_edges[i],
-            y=y_edges[i],
-            line={"width": width[i], "color": color[i]},
-            hoverinfo="none",
-            mode="lines",
-            showlegend=False,
-        )
-        for i in indices
-    ]
-    return edge_trace  # type: ignore
-
-
-def create_annotations(
-    labels: List[str],
-    x: np.ndarray,
-    y: np.ndarray,
-    size: Union[np.ndarray, float] = 5,
-) -> List[Dict[str, Any]]:
-    """
-    Creates annotation objects for a plotly graph object.
-
-    Parameters
-    ----------
-    labels: list of str
-        List of annotation strings
-    x: ndarray of shape (n_nodes,)
-        x coordinates of annotations
-    y: ndarray of shape (n_nodes,)
-        y coordinates of annotations
-    size: ndarray of shape (n_nodes,) or float, default 5
-        Sizes of the annotations, if an array, different sizes will
-        be used for each annotation.
-
-    Returns
-    ----------
-    annotations: list of dict
-        Plotly annotation objects
-    """
-    annotations = []
-    if size is float:
-        size = np.full(len(x), size)
-    for i, label in enumerate(labels):
-        annotations.append(
-            dict(
-                text=label,
-                x=x[i],
-                y=y[i],
-                showarrow=False,
-                xanchor="center",
-                bgcolor="rgba(255,255,255,0.5)",
-                bordercolor="rgba(0,0,0,0.5)",
-                font={
-                    "family": "Helvetica",
-                    "size": size[i],
-                    "color": "black",
-                },
-            )
-        )
-    return annotations
+    trace = go.Scatter(
+        x=x_edges,
+        y=y_edges,
+        hoverinfo="none",
+        mode="lines",
+        showlegend=False,
+        opacity=0.2,
+        line=dict(color="black"),
+    )
+    return trace
 
 
 def get_seed_colors(kernel: SemanticKernel) -> np.ndarray:
@@ -291,9 +129,9 @@ def plot_semantic_kernel(kernel: SemanticKernel) -> go.Figure:
     x, y = calculate_positions(kernel.distance_matrix)
 
     node_traces = create_node_traces(x=x, y=y, kernel=kernel)
-    edge_traces = create_edge_traces(x=x, y=y, edges=kernel.connections)
+    edge_trace = create_edge_trace(x=x, y=y, edges=kernel.connections)
 
-    figure = go.Figure(data=[*edge_traces, *node_traces])
+    figure = go.Figure(data=[edge_trace, *node_traces])
     figure.update_xaxes(
         showticklabels=False,
         title="",
@@ -314,5 +152,7 @@ def plot_semantic_kernel(kernel: SemanticKernel) -> go.Figure:
         zerolinewidth=2,
         zerolinecolor="#d1d5db",
     )
-    figure.update_layout(paper_bgcolor="white", plot_bgcolor="white")
+    figure.update_layout(
+        showlegend=False, paper_bgcolor="white", plot_bgcolor="white"
+    )
     return figure

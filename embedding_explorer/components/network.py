@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 import plotly.graph_objects as go
-from dash_extensions.enrich import (DashBlueprint, Input, Output, dcc,
+from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
                                     exceptions)
 
 from embedding_explorer.plots.network import plot_semantic_kernel
@@ -21,22 +21,27 @@ def create_network(
         id="network",
         responsive=True,
         config={"scrollZoom": True},
+        animation_options={"frame": {"redraw": True}},
         animate=True,
         className="h-full w-full",
     )
 
     @network.callback(
         Output("network", "figure"),
-        Input("word_selector", "value"),
-        Input("first_level_association", "value"),
-        Input("second_level_association", "value"),
+        Input("submit_button", "n_clicks"),
+        State("word_selector", "value"),
+        State("first_level_association", "value"),
+        State("second_level_association", "value"),
         prevent_initial_callback=True,
     )
     def update_network_figure(
-        selected_words: List[int], n_first_level: int, n_second_level: int
+        n_clicks: int,
+        selected_words: List[int],
+        n_first_level: int,
+        n_second_level: int,
     ) -> go.Figure:
         """Updates the network when the selected words are changed."""
-        if not selected_words:
+        if not selected_words or not n_clicks:
             raise exceptions.PreventUpdate
         print("Redrawing network")
         kernel = create_semantic_kernel(
@@ -49,6 +54,7 @@ def create_network(
         figure = plot_semantic_kernel(kernel)
         figure.update(layout_coloraxis_showscale=False)
         figure.update_traces(marker_showscale=False)
+        # figure.show()
         figure.update_layout(dragmode="pan")
         return figure
 
