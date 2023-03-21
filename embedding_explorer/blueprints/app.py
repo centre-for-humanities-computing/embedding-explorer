@@ -1,21 +1,20 @@
 """Blueprint for the main application."""
-from typing import Any, List
-
 import dash_mantine_components as dmc
 import numpy as np
 from dash_extensions.enrich import DashBlueprint, dcc, html
 
 from embedding_explorer.components.network import create_network
-from embedding_explorer.components.slider import create_slider
 from embedding_explorer.components.word_selector import create_word_selector
 
 
-def create_blueprint(
-    vocab: np.ndarray, embeddings: np.ndarray
+def create_app(
+    vocab: np.ndarray, embeddings: np.ndarray, model_name: str = ""
 ) -> DashBlueprint:
     # --------[ Collecting blueprints ]--------
-    word_selector = create_word_selector(vocab=vocab)
-    network = create_network(vocab=vocab, embeddings=embeddings)
+    word_selector = create_word_selector(vocab=vocab, model_name=model_name)
+    network = create_network(
+        vocab=vocab, embeddings=embeddings, model_name=model_name
+    )
     blueprints = [
         word_selector,
         network,
@@ -37,7 +36,7 @@ def create_blueprint(
                         min=0,
                         stepHoldDelay=500,
                         stepHoldInterval=100,
-                        id="first_level_association",
+                        id=f"{model_name}_first_level_association",
                         size="lg",
                     ),
                     dmc.NumberInput(
@@ -48,7 +47,7 @@ def create_blueprint(
                         min=0,
                         stepHoldDelay=500,
                         stepHoldInterval=100,
-                        id="second_level_association",
+                        id=f"{model_name}_second_level_association",
                         size="lg",
                     ),
                     html.Button(
@@ -60,7 +59,7 @@ def create_blueprint(
                         from-cyan-500 via-blue-500 to-blue-400 bg-size-200
                         hover:font-bold font-normal
                         """,
-                        id="submit_button",
+                        id=f"{model_name}_submit_button",
                     ),
                 ],
                 className="""

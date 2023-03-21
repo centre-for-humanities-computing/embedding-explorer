@@ -11,14 +11,13 @@ from embedding_explorer.prepare.semkern import create_semantic_kernel
 
 
 def create_network(
-    vocab: np.ndarray,
-    embeddings: np.ndarray,
+    vocab: np.ndarray, embeddings: np.ndarray, model_name: str = ""
 ) -> DashBlueprint:
     """Creates Network component blueprint."""
     network = DashBlueprint()
 
     network.layout = dcc.Graph(
-        id="network",
+        id=f"{model_name}_network",
         responsive=True,
         config={"scrollZoom": True},
         animation_options={"frame": {"redraw": True}},
@@ -27,11 +26,11 @@ def create_network(
     )
 
     @network.callback(
-        Output("network", "figure"),
-        Input("submit_button", "n_clicks"),
-        State("word_selector", "value"),
-        State("first_level_association", "value"),
-        State("second_level_association", "value"),
+        Output(f"{model_name}_network", "figure"),
+        Input(f"{model_name}_submit_button", "n_clicks"),
+        State(f"{model_name}_word_selector", "value"),
+        State(f"{model_name}_first_level_association", "value"),
+        State(f"{model_name}_second_level_association", "value"),
         prevent_initial_callback=True,
     )
     def update_network_figure(

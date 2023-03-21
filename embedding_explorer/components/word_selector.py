@@ -13,7 +13,9 @@ class Option(TypedDict):
     label: str
 
 
-def create_word_selector(vocab: np.ndarray) -> DashBlueprint:
+def create_word_selector(
+    vocab: np.ndarray, model_name: str = ""
+) -> DashBlueprint:
     """Creates word selector component blueprint."""
 
     word_selector = DashBlueprint()
@@ -23,7 +25,7 @@ def create_word_selector(vocab: np.ndarray) -> DashBlueprint:
         label="Seeds",
         description="Select words that are going to be used as"
         "the basis of semantic association.",
-        id="word_selector",
+        id=f"{model_name}_word_selector",
         placeholder="Search for words...",
         value=[],
         data=[],
@@ -33,9 +35,9 @@ def create_word_selector(vocab: np.ndarray) -> DashBlueprint:
     )
 
     @word_selector.callback(
-        Output("word_selector", "data"),
-        Input("word_selector", "searchValue"),
-        State("word_selector", "value"),
+        Output(f"{model_name}_word_selector", "data"),
+        Input(f"{model_name}_word_selector", "searchValue"),
+        State(f"{model_name}_word_selector", "value"),
     )
     def update_options(
         search_value: str, selected_values: List[int]

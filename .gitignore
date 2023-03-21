@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 
 file_system_store/
+thumbnails/
+models/
+.thumbnails/
 
 # C extensions
 *.so

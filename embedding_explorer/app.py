@@ -1,3 +1,4 @@
+import dash_labs as dl
 from dash_extensions.enrich import Dash, DashBlueprint
 
 
@@ -17,5 +18,8 @@ def get_dash_app(blueprint: DashBlueprint) -> Dash:
                 "crossorigin": "anonymous",
             },
         ],
+        prevent_initial_callbacks=True,
+        use_pages=True,
+        pages_folder="",
     )
     return app

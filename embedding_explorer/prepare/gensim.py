@@ -1,13 +1,14 @@
 """Utilities for preparing Gensim word vectors for usage."""
-from typing import Tuple
 
 import numpy as np
 from gensim.models import KeyedVectors
 
+from embedding_explorer.model import Model
+
 
 def prepare_keyed_vectors(
     keyed_vectors: KeyedVectors,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Model:
     """Prepares Gensim's KeyedVectors objects for usage in
     embedding-explorer.
 
@@ -25,4 +26,4 @@ def prepare_keyed_vectors(
     """
     vocab = np.array(keyed_vectors.index_to_key)
     embeddings = keyed_vectors.vectors
-    return vocab, embeddings
+    return Model(vocab=vocab, embeddings=embeddings)
