@@ -54,7 +54,9 @@ def create_dashboard(models: Dict[str, Model]):
     dashboard.register_callbacks(main_blueprint)
 
     def register_pages(app: Dash) -> None:
-        dash.register_page("home", path="/", layout=dashboard.layout)
+        dash.register_page(
+            "home", path="/", layout=dashboard.layout, redirect_from=["/home"]
+        )
         for path, layout in pages.items():
             dash.register_page(path, layout=layout)
 

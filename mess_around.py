@@ -4,7 +4,6 @@ from gensim.models import KeyedVectors
 
 from embedding_explorer.app import get_dash_app
 from embedding_explorer.blueprints.dashboard import create_dashboard
-from embedding_explorer.components.model_card import create_card
 from embedding_explorer.prepare.gensim import prepare_keyed_vectors
 
 MODEL_NAMES = [
