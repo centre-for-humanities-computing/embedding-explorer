@@ -58,6 +58,8 @@ def create_dashboard(models: Dict[str, Model]):
             "home", path="/", layout=dashboard.layout, redirect_from=["/home"]
         )
         for model_name, layout in pages.items():
-            dash.register_page(model_name, quote(model_name), layout=layout)
+            dash.register_page(
+                model_name, "/" + quote(model_name), layout=layout
+            )
 
     return main_blueprint, register_pages
