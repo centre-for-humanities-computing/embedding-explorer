@@ -31,7 +31,7 @@ def create_dashboard(models: Dict[str, Model]):
             model_name=model_name,
         )
         page.register_callbacks(dashboard)
-        pages[quote(model_name)] = page.layout
+        pages[model_name] = page.layout
 
     dashboard.layout = html.Div(
         children=[
@@ -57,7 +57,7 @@ def create_dashboard(models: Dict[str, Model]):
         dash.register_page(
             "home", path="/", layout=dashboard.layout, redirect_from=["/home"]
         )
-        for path, layout in pages.items():
-            dash.register_page(path, layout=layout)
+        for model_name, layout in pages.items():
+            dash.register_page(model_name, quote(model_name), layout=layout)
 
     return main_blueprint, register_pages
