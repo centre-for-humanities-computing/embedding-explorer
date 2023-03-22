@@ -3,8 +3,15 @@ from typing import List
 
 import dash_mantine_components as dmc
 import numpy as np
-from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
-                                    exceptions)
+from dash_extensions.enrich import (
+    DashBlueprint,
+    Input,
+    Output,
+    State,
+    dcc,
+    exceptions,
+)
+from thefuzz import process
 from typing_extensions import TypedDict
 
 
@@ -44,20 +51,28 @@ def create_word_selector(
     ) -> List[Option]:
         if not search_value:
             raise exceptions.PreventUpdate
-        search_value = search_value.lower()
-        print(f"Updating options. {search_value}")
-        if search_value in vocab_lookup:
-            result = [
-                {"value": vocab_lookup[search_value], "label": search_value}
-            ]
-            for index in selected_values:
-                result.append({"value": index, "label": vocab[index]})
-            return result
-        matching_terms: List[Option] = [
-            {"value": i_word, "label": word}
-            for i_word, word in enumerate(vocab)
-            if (search_value in word.lower()) or (i_word in selected_values)
+        # Collecting already chosen options
+        selected_options = [
+            Option(value=index, label=vocab[index])
+            for index in selected_values
         ]
-        return matching_terms
+        # Lowercasing search value
+        search_value = search_value.lower()
+        # Trying to find exact match
+        if search_value in vocab_lookup:
+            exact_match = Option(
+                value=vocab_lookup[search_value], label=search_value
+            )
+            return [exact_match] + selected_options
+        # Trying to fuzzy find 5 closest terms
+        fuzzy_process_result = process.extract(search_value, vocab, limit=5)
+        # Getting only the terms
+        fuzzy_match_terms = [term for term, score in fuzzy_process_result]
+        # Collecting options
+        fuzzy_matches = [
+            Option(value=vocab_lookup[term], label=term)
+            for term in fuzzy_match_terms
+        ]
+        return fuzzy_matches + selected_options
 
     return word_selector

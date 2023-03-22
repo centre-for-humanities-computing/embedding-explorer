@@ -24,6 +24,7 @@ scikit-learn = "~1.2.0"
 numpy = "^1.24.1"
 pandas = "~1.5.2"
 wordcloud = "~1.8.2.2"
+thefuzz = "~0.19.0"
 
 
 [build-system]
