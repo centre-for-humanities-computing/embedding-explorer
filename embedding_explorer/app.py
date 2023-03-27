@@ -7,12 +7,12 @@ from typing import Callable, Dict, Optional
 
 from dash_extensions.enrich import Dash, DashBlueprint
 
-from embedding_explorer.blueprints.app import create_app
 from embedding_explorer.blueprints.dashboard import create_dashboard
+from embedding_explorer.blueprints.explorer import create_explorer
 from embedding_explorer.model import Model
 
 
-def get_dash_app(blueprint: DashBlueprint) -> Dash:
+def get_dash_app(blueprint: DashBlueprint, use_pages: bool) -> Dash:
     """Returns app based on a blueprint with
     tailwindcss and font awesome added."""
     app = Dash(
@@ -118,8 +118,8 @@ def inspect_model(
         If the app runs in a Jupyter notebook, work goes on on
         a background thread, this thread is returned.
     """
-    blueprint = create_app(vocab=model.vocab, embeddings=model.embeddings)
-    app = get_dash_app(blueprint=blueprint)
+    blueprint = create_explorer(model=model)
+    app = get_dash_app(blueprint=blueprint, use_pages=False)
     return run_app(app, port=port)
 
 
@@ -143,6 +143,6 @@ def show_embedding_dashboard(
         a background thread, this thread is returned.
     """
     blueprint, register_pages = create_dashboard(models=models)
-    app = get_dash_app(blueprint=blueprint)
+    app = get_dash_app(blueprint=blueprint, use_pages=True)
     register_pages(app)
     return run_app(app, port=port)

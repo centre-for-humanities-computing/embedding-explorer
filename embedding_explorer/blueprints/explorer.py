@@ -8,7 +8,7 @@ from embedding_explorer.components.word_selector import create_word_selector
 from embedding_explorer.model import Model
 
 
-def create_app(model: Model, model_name: str = "") -> DashBlueprint:
+def create_explorer(model: Model, model_name: str = "") -> DashBlueprint:
     # --------[ Collecting blueprints ]--------
     word_selector = create_word_selector(
         vocab=model.vocab, model_name=model_name
