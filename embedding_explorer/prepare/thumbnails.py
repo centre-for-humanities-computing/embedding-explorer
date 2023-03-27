@@ -1,3 +1,5 @@
+import string
+
 import numpy as np
 from wordcloud import WordCloud
 
@@ -5,7 +7,7 @@ from embedding_explorer.model import Model
 
 
 def is_alpha(word: str) -> bool:
-    return all((c.isalpha() for c in word))
+    return all((c.isalpha() or c in string.printable for c in word))
 
 
 COLORMAPS = [
@@ -23,10 +25,12 @@ def generate_thumbnail(model: Model) -> str:
     """Generates thumbnail for given model and returns it as SVG string."""
     vocab = model.vocab
     alphabetical = np.vectorize(is_alpha)(vocab)
-    vocab = vocab[alphabetical]
+    if vocab.shape[0] > 30:
+        vocab = vocab[alphabetical]
     n_vocab = vocab.shape[0]
-    random_word_indices = np.random.randint(0, n_vocab, size=100)
-    random_freqs = np.random.randint(0, 100, size=100)
+    n_top = min(n_vocab, 100)
+    random_word_indices = np.random.randint(0, n_vocab, size=n_top)
+    random_freqs = np.random.randint(0, 100, size=n_top)
     colormap = COLORMAPS[np.random.randint(0, len(COLORMAPS))]
     word_freqs = {
         vocab[index]: freq
