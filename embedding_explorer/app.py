@@ -29,8 +29,8 @@ def get_dash_app(blueprint: DashBlueprint, use_pages: bool) -> Dash:
             },
         ],
         prevent_initial_callbacks=True,
-        use_pages=True,
-        pages_folder="",
+        use_pages=use_pages,
+        pages_folder="" if use_pages else "pages",
     )
     return app
 

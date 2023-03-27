@@ -25,15 +25,18 @@ def get_associations(
 ) -> np.ndarray:
     """Returns most closely related words to the given seeds in the form
     of edges from seeds to associations."""
+    print("Getting associations")
     # Selecting terms
     selected_terms_matrix = embeddings[seed_ids]
     # Calculating all distances from the selected words
+    print("Calculating distances")
     distances = pairwise_distances(
         selected_terms_matrix, embeddings, metric=metric
     )
     # Partitions array so that the smallest k elements along axis 1 are at the
     # lowest k dimensions, then I slice the array to only get the top indices
     # We do plus 1, as obviously the closest word is gonna be the word itself
+    print("Partitioning arguments (top n results)")
     closest = np.argpartition(distances, kth=n_closest + 1, axis=1)[
         :, 1 : n_closest + 1
     ]
@@ -42,7 +45,9 @@ def get_associations(
         for association in closest[i_seed]:
             connections.append([seed, association])
     connections = np.array(connections)
+    print("Getting unique connections")
     connections = unique_connections(connections)
+    print("Done associations")
     return connections
 
 

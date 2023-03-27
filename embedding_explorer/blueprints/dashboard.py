@@ -5,7 +5,7 @@ from urllib.parse import quote
 import dash_mantine_components as dmc
 from dash_extensions.enrich import Dash, DashBlueprint, dash, dcc, html
 
-from embedding_explorer.blueprints.app import create_app
+from embedding_explorer.blueprints.explorer import create_explorer
 from embedding_explorer.components.model_card import create_card
 from embedding_explorer.model import Model
 
@@ -26,7 +26,7 @@ def create_dashboard(models: Dict[str, Model]):
     pages = {}
     for model_name, model in models.items():
         cards.append(create_card(model=model, model_name=model_name))
-        page = create_app(
+        page = create_explorer(
             model=model,
             model_name=model_name,
         )
