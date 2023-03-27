@@ -5,15 +5,16 @@ from dash_extensions.enrich import DashBlueprint, dcc, html
 
 from embedding_explorer.components.network import create_network
 from embedding_explorer.components.word_selector import create_word_selector
+from embedding_explorer.model import Model
 
 
-def create_app(
-    vocab: np.ndarray, embeddings: np.ndarray, model_name: str = ""
-) -> DashBlueprint:
+def create_app(model: Model, model_name: str = "") -> DashBlueprint:
     # --------[ Collecting blueprints ]--------
-    word_selector = create_word_selector(vocab=vocab, model_name=model_name)
+    word_selector = create_word_selector(
+        vocab=model.vocab, model_name=model_name
+    )
     network = create_network(
-        vocab=vocab, embeddings=embeddings, model_name=model_name
+        vocab=model.vocab, embeddings=model.embeddings, model_name=model_name
     )
     blueprints = [
         word_selector,

@@ -3,8 +3,14 @@ from typing import List
 
 import numpy as np
 import plotly.graph_objects as go
-from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
-                                    exceptions)
+from dash_extensions.enrich import (
+    DashBlueprint,
+    Input,
+    Output,
+    State,
+    dcc,
+    exceptions,
+)
 
 from embedding_explorer.plots.network import plot_semantic_kernel
 from embedding_explorer.prepare.semkern import create_semantic_kernel
@@ -42,7 +48,6 @@ def create_network(
         """Updates the network when the selected words are changed."""
         if not selected_words or not n_clicks:
             raise exceptions.PreventUpdate
-        print("Redrawing network")
         kernel = create_semantic_kernel(
             seed_ids=selected_words,
             embeddings=embeddings,

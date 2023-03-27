@@ -18,6 +18,7 @@ def create_dashboard(models: Dict[str, Model]):
     models: dict of str to Model
         Mapping of names to models.
     """
+    print("Creating Dashboard")
     dashboard = DashBlueprint()
 
     # Collecting cards and registering pages
@@ -54,12 +55,15 @@ def create_dashboard(models: Dict[str, Model]):
     dashboard.register_callbacks(main_blueprint)
 
     def register_pages(app: Dash) -> None:
+        print("Registering pages")
         dash.register_page(
             "home", path="/", layout=dashboard.layout, redirect_from=["/home"]
         )
         for model_name, layout in pages.items():
             dash.register_page(
-                model_name, "/" + quote(model_name), layout=layout
+                quote(model_name), "/" + quote(model_name), layout=layout
             )
+        print("Done registering pages")
 
+    print("Done creating dashbaord")
     return main_blueprint, register_pages
