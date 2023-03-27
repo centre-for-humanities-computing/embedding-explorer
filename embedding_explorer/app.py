@@ -100,7 +100,7 @@ def run_app(
         app.run_server(port=port)
 
 
-def inspect_model(
+def show_explorer(
     model: Model, port: int = 8050
 ) -> Optional[threading.Thread]:
     """Visually inspect word embedding model with embedding-explorer.
@@ -123,7 +123,7 @@ def inspect_model(
     return run_app(app, port=port)
 
 
-def show_embedding_dashboard(
+def show_dashboard(
     models: Dict[str, Model], port: int = 8050
 ) -> Optional[threading.Thread]:
     """Show dashboard for all given word embeddings.
