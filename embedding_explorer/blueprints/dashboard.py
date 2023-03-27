@@ -27,8 +27,7 @@ def create_dashboard(models: Dict[str, Model]):
     for model_name, model in models.items():
         cards.append(create_card(model=model, model_name=model_name))
         page = create_app(
-            vocab=model.vocab,
-            embeddings=model.embeddings,
+            model=model,
             model_name=model_name,
         )
         page.register_callbacks(dashboard)
