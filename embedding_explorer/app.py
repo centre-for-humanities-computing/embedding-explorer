@@ -101,7 +101,7 @@ def run_app(
 
 
 def show_explorer(
-    model: Model, port: int = 8050
+    model: Model, port: int = 8050, fuzzy_search: bool = False
 ) -> Optional[threading.Thread]:
     """Visually inspect word embedding model with embedding-explorer.
 
@@ -111,6 +111,11 @@ def show_explorer(
         Named tuple of model vocabulary and matrix of embeddings.
     port: int
         Port for the app to run on.
+    fuzzy_search: bool, default False
+        Specifies whether you want to fuzzy search in the vocabulary.
+        This is recommended for production use, but the index takes
+        time to set up, therefore the startup time is expected to
+        be greater.
 
     Returns
     -------
@@ -118,13 +123,13 @@ def show_explorer(
         If the app runs in a Jupyter notebook, work goes on on
         a background thread, this thread is returned.
     """
-    blueprint = create_explorer(model=model)
+    blueprint = create_explorer(model=model, fuzzy_search=fuzzy_search)
     app = get_dash_app(blueprint=blueprint, use_pages=False)
     return run_app(app, port=port)
 
 
 def show_dashboard(
-    models: Dict[str, Model], port: int = 8050
+    models: Dict[str, Model], port: int = 8050, fuzzy_search: bool = False
 ) -> Optional[threading.Thread]:
     """Show dashboard for all given word embeddings.
 
@@ -132,6 +137,11 @@ def show_dashboard(
     ----------
     models: dict of str to Model
         Mapping of model names to models.
+    fuzzy_search: bool, default False
+        Specifies whether you want to fuzzy search in the vocabulary.
+        This is recommended for production use, but the index takes
+        time to set up, therefore the startup time is expected to
+        be greater.
 
     port: int
         Port for the app to run on.
@@ -142,7 +152,9 @@ def show_dashboard(
         If the app runs in a Jupyter notebook, work goes on on
         a background thread, this thread is returned.
     """
-    blueprint, register_pages = create_dashboard(models=models)
+    blueprint, register_pages = create_dashboard(
+        models=models, fuzzy_search=fuzzy_search
+    )
     app = get_dash_app(blueprint=blueprint, use_pages=True)
     register_pages(app)
     return run_app(app, port=port)

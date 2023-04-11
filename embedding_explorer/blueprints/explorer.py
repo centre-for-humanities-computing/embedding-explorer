@@ -8,10 +8,12 @@ from embedding_explorer.components.word_selector import create_word_selector
 from embedding_explorer.model import Model
 
 
-def create_explorer(model: Model, model_name: str = "") -> DashBlueprint:
+def create_explorer(
+    model: Model, model_name: str = "", fuzzy_search: bool = False
+) -> DashBlueprint:
     # --------[ Collecting blueprints ]--------
     word_selector = create_word_selector(
-        vocab=model.vocab, model_name=model_name
+        vocab=model.vocab, model_name=model_name, fuzzy_search=fuzzy_search
     )
     network = create_network(
         vocab=model.vocab, embeddings=model.embeddings, model_name=model_name

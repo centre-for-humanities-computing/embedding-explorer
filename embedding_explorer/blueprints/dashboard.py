@@ -10,7 +10,7 @@ from embedding_explorer.components.model_card import create_card
 from embedding_explorer.model import Model
 
 
-def create_dashboard(models: Dict[str, Model]):
+def create_dashboard(models: Dict[str, Model], fuzzy_search: bool = False):
     """Creates dashboard for all embedding models.
 
     Parameters
@@ -27,8 +27,7 @@ def create_dashboard(models: Dict[str, Model]):
     for model_name, model in models.items():
         cards.append(create_card(model=model, model_name=model_name))
         page = create_explorer(
-            model=model,
-            model_name=model_name,
+            model=model, model_name=model_name, fuzzy_search=fuzzy_search
         )
         page.register_callbacks(dashboard)
         pages[model_name] = page.layout

@@ -23,7 +23,7 @@ scikit-learn = "~1.1.0"
 numpy = ">=1.23.0"
 pandas = "~1.5.2"
 wordcloud = "~1.8.2.2"
-neofuzz = ">=0.1.0"
+neofuzz = ">=0.1.1"
 
 
 [build-system]
