@@ -52,8 +52,7 @@ def create_dashboard(models: Dict[str, Model], fuzzy_search: bool = False):
     main_blueprint.layout = html.Div(dash.page_container)
     dashboard.register_callbacks(main_blueprint)
 
-    def register_pages(app: Dash) -> None:
-        print("Registering pages")
+    def register_pages():
         dash.register_page(
             "home", path="/", layout=dashboard.layout, redirect_from=["/home"]
         )
@@ -61,7 +60,5 @@ def create_dashboard(models: Dict[str, Model], fuzzy_search: bool = False):
             dash.register_page(
                 quote(model_name), "/" + quote(model_name), layout=layout
             )
-        print("Done registering pages")
 
-    print("Done creating dashbaord")
     return main_blueprint, register_pages

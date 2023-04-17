@@ -12,13 +12,15 @@ from embedding_explorer.blueprints.explorer import create_explorer
 from embedding_explorer.model import Model
 
 
-def get_dash_app(blueprint: DashBlueprint, use_pages: bool) -> Dash:
+def get_dash_app(blueprint: DashBlueprint, **kwargs) -> Dash:
     """Returns app based on a blueprint with
     tailwindcss and font awesome added."""
+    additional_scripts = kwargs.get("external_scripts", [])
+    use_pages = kwargs.get("use_pages", False)
+    pages_folder = "" if use_pages else "pages"
     app = Dash(
-        __name__,
         blueprint=blueprint,
-        title="embedding-explorer",
+        title=kwargs.get("title", "embedding-explorer"),
         external_scripts=[
             {
                 "src": "https://cdn.tailwindcss.com",
@@ -27,10 +29,11 @@ def get_dash_app(blueprint: DashBlueprint, use_pages: bool) -> Dash:
                 "src": "https://kit.fontawesome.com/9640e5cd85.js",
                 "crossorigin": "anonymous",
             },
+            *additional_scripts,
         ],
         prevent_initial_callbacks=True,
-        use_pages=use_pages,
-        pages_folder="" if use_pages else "pages",
+        pages_folder=pages_folder,
+        **kwargs,
     )
     return app
 
@@ -156,5 +159,5 @@ def show_dashboard(
         models=models, fuzzy_search=fuzzy_search
     )
     app = get_dash_app(blueprint=blueprint, use_pages=True)
-    register_pages(app)
+    register_pages()
     return run_app(app, port=port)

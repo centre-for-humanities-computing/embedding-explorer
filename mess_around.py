@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 from gensim.models import KeyedVectors
 
-from embedding_explorer import show_explorer
+from embedding_explorer import show_dashboard, show_explorer
 from embedding_explorer.model import Model
 
 
@@ -16,7 +16,7 @@ def main():
     # model = Model(
     #     vocab=model.vocab[indices], embeddings=model.embeddings[indices]
     # )
-    show_explorer(model)
+    show_dashboard(models={"glove-wiki-50": model})
 
 
 if __name__ == "__main__":
