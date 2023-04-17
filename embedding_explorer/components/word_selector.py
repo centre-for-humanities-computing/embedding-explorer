@@ -10,6 +10,7 @@ from dash_extensions.enrich import (
     State,
     dcc,
     exceptions,
+    html,
 )
 from neofuzz import Process
 from sklearn.decomposition import NMF
@@ -54,7 +55,7 @@ def create_word_selector(
     else:
         fuzzy_process = DummyProcess()
 
-    word_selector.layout = dcc.Dropdown(
+    search_bar = dcc.Dropdown(
         # label="Seeds",
         # description="Select words that are going to be used as"
         # "the basis of semantic association.",
@@ -67,6 +68,29 @@ def create_word_selector(
         clearable=True,
         # size="lg",
         multi=True,
+    )
+    word_selector.layout = dmc.Accordion(
+        chevronPosition="right",
+        variant="contained",
+        children=dmc.AccordionItem(
+            [
+                dmc.AccordionControl(
+                    html.Div(
+                        [
+                            dmc.Text("Seed words"),
+                            dmc.Text(
+                                "Words that will be used as the basis of association.",
+                                size="sm",
+                                weight=400,
+                                color="dimmed",
+                            ),
+                        ]
+                    ),
+                ),
+                dmc.AccordionPanel(search_bar),
+            ],
+            value="search",
+        ),
     )
 
     @word_selector.callback(

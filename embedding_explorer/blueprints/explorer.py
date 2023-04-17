@@ -30,33 +30,63 @@ def create_explorer(
             html.Div(network.layout, className="flex-1 bg-red"),
             html.Div(
                 [
+                    dmc.Text("Query parameters", size="lg", align="center"),
                     word_selector.layout,
-                    dmc.NumberInput(
-                        label="First level association",
-                        description="Number of closest words to find"
-                        "to the given seeds.",
-                        value=5,
-                        min=0,
-                        stepHoldDelay=500,
-                        stepHoldInterval=100,
-                        id=f"{model_name}_first_level_association",
-                        size="lg",
-                    ),
-                    dmc.NumberInput(
-                        label="Second level association",
-                        description="Number of closest words to find to words"
-                        "found in the first level association.",
-                        value=5,
-                        min=0,
-                        stepHoldDelay=500,
-                        stepHoldInterval=100,
-                        id=f"{model_name}_second_level_association",
-                        size="lg",
+                    dmc.Accordion(
+                        chevronPosition="right",
+                        variant="contained",
+                        children=[
+                            dmc.AccordionItem(
+                                [
+                                    dmc.AccordionControl(
+                                        html.Div(
+                                            [
+                                                dmc.Text("Associations"),
+                                                dmc.Text(
+                                                    "Set the number of associations for each iteration",
+                                                    size="sm",
+                                                    weight=400,
+                                                    color="dimmed",
+                                                ),
+                                            ]
+                                        )
+                                    ),
+                                    dmc.AccordionPanel(
+                                        [
+                                            dmc.NumberInput(
+                                                label="First level association",
+                                                description="Number of closest words to find"
+                                                "to the given seeds.",
+                                                value=5,
+                                                min=0,
+                                                stepHoldDelay=500,
+                                                stepHoldInterval=100,
+                                                id=f"{model_name}_first_level_association",
+                                                size="md",
+                                                className="mb-3",
+                                            ),
+                                            dmc.NumberInput(
+                                                label="Second level association",
+                                                description="Number of closest words to find to words"
+                                                " found in the first level association.",
+                                                value=5,
+                                                min=0,
+                                                stepHoldDelay=500,
+                                                stepHoldInterval=100,
+                                                id=f"{model_name}_second_level_association",
+                                                size="md",
+                                            ),
+                                        ]
+                                    ),
+                                ],
+                                value="search",
+                            )
+                        ],
                     ),
                     html.Button(
                         "Submit",
                         className="""
-                        rounded-xl text-white text-bold text-lg
+                        rounded-xl text-white text-bold text-md
                         p-3 mt-5
                         transition-all duration-200 bg-gradient-to-bl
                         from-cyan-500 via-blue-500 to-blue-400 bg-size-200
