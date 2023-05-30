@@ -1,5 +1,4 @@
 """Association slider components."""
-from typing import Optional
 
 import dash_mantine_components as dmc
 from dash_extensions.enrich import DashBlueprint

@@ -6,7 +6,7 @@ import numpy as np
 from dash_extensions.enrich import DashBlueprint, html
 from dash_iconify import DashIconify
 
-from embedding_explorer.model import Model
+from embedding_explorer.model import StaticEmbeddings
 from embedding_explorer.prepare.thumbnails import generate_thumbnail
 
 COOL_ICONS = [
@@ -28,7 +28,7 @@ COOL_ICONS = [
 ]
 
 
-def create_card(model: Model, model_name: str) -> DashBlueprint:
+def create_card(model: StaticEmbeddings, model_name: str) -> DashBlueprint:
     """Creates card for model."""
     card = DashBlueprint()
     thumbnail = generate_thumbnail(model)

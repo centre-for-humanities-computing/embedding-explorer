@@ -4,19 +4,13 @@ import numpy as np
 from gensim.models import KeyedVectors
 
 from embedding_explorer import show_dashboard, show_explorer
-from embedding_explorer.model import Model
+from embedding_explorer.model import StaticEmbeddings
 
 
 def main():
     kv = KeyedVectors.load("dat/glove-wiki-gigaword-50.gensim")
-    model = Model.from_keyed_vectors(kv)
-    # indices = np.random.choice(
-    #     np.arange(len(model.vocab)), size=20_000, replace=False
-    # )
-    # model = Model(
-    #     vocab=model.vocab[indices], embeddings=model.embeddings[indices]
-    # )
-    show_dashboard(models={"glove-wiki-50": model})
+    model = StaticEmbeddings.from_keyed_vectors(kv)
+    show_explorer(model=model, fuzzy_search=True)
 
 
 if __name__ == "__main__":
