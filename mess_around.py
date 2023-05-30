@@ -10,7 +10,7 @@ from embedding_explorer.model import StaticEmbeddings
 def main():
     kv = KeyedVectors.load("dat/glove-wiki-gigaword-50.gensim")
     model = StaticEmbeddings.from_keyed_vectors(kv)
-    show_explorer(model=model, fuzzy_search=True)
+    show_explorer(model=model)
 
 
 if __name__ == "__main__":

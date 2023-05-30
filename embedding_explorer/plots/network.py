@@ -117,7 +117,7 @@ def create_node_traces(
     is_seed = kernel.priorities == 0
     sizes = calculate_n_connections(kernel.connections)
     sizes = (sizes / np.max(sizes)) * 60
-    seed_trace = go.Scatter(
+    seed_trace = go.Scattergl(
         name="",
         text=kernel.vocabulary[is_seed],
         x=x[is_seed],
@@ -130,7 +130,7 @@ def create_node_traces(
         textfont=dict(size=12, color="white"),
     )
     is_first_level = kernel.priorities == 1
-    first_level_trace = go.Scatter(
+    first_level_trace = go.Scattergl(
         name="",
         text=kernel.vocabulary[is_first_level],
         x=x[is_first_level],
@@ -144,7 +144,7 @@ def create_node_traces(
         ),
     )
     is_second_level = kernel.priorities == 2
-    second_level_trace = go.Scatter(
+    second_level_trace = go.Scattergl(
         name="",
         text=kernel.vocabulary[is_second_level],
         x=x[is_second_level],
