@@ -62,6 +62,40 @@ def create_edge_trace(
     return trace
 
 
+def minmax(a: np.ndarray) -> np.ndarray:
+    """Min-max normalizes an array."""
+    return (a - np.min(a)) / (np.max(a) - np.min(a))
+
+
+def add_edges(
+    fig: go.Figure,
+    edges: np.ndarray,
+    x: np.ndarray,
+    y: np.ndarray,
+    distance_matrix: np.ndarray,
+) -> go.Figure:
+    """Adds edges to a figure as shapes."""
+    opacities = np.array(
+        [-distance_matrix[start, end] for start, end in edges]
+    )
+    opacities = minmax(opacities)
+    for (start, end), opacity in zip(edges, opacities):
+        fig.add_shape(
+            dict(
+                type="line",
+                xref="x",
+                yref="y",
+                x0=x[start],
+                y0=y[start],
+                x1=x[end],
+                y1=y[end],
+                layer="below",
+                opacity=opacity,
+            )
+        )
+    return fig
+
+
 def get_seed_colors(kernel: SemanticKernel) -> np.ndarray:
     """Returns array of RGB colors for each seed."""
     n_seeds = np.sum(kernel.priorities == 0)
@@ -129,9 +163,17 @@ def plot_semantic_kernel(kernel: SemanticKernel) -> go.Figure:
     x, y = calculate_positions(kernel.distance_matrix)
 
     node_traces = create_node_traces(x=x, y=y, kernel=kernel)
-    edge_trace = create_edge_trace(x=x, y=y, edges=kernel.connections)
+    # edge_trace = create_edge_trace(x=x, y=y, edges=kernel.connections)
 
-    figure = go.Figure(data=[edge_trace, *node_traces])
+    # figure = go.Figure(data=[edge_trace, *node_traces])
+    figure = go.Figure(data=[*node_traces])
+    add_edges(
+        figure,
+        edges=kernel.connections,
+        x=x,
+        y=y,
+        distance_matrix=kernel.distance_matrix,
+    )
     figure.update_xaxes(
         showticklabels=False,
         title="",
