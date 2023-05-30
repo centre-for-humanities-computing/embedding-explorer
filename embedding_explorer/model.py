@@ -4,12 +4,12 @@ from typing import NamedTuple
 import numpy as np
 
 
-class Model(NamedTuple):
+class StaticEmbeddings(NamedTuple):
     vocab: np.ndarray
     embeddings: np.ndarray
 
     @classmethod
-    def from_keyed_vectors(cls, keyed_vectors) -> "Model":
+    def from_keyed_vectors(cls, keyed_vectors) -> "StaticEmbeddings":
         """Creates static embedding model from keyed vectors in Gensim."""
         vocab = np.array(keyed_vectors.index_to_key)
         embeddings = keyed_vectors.vectors
@@ -20,7 +20,7 @@ class Model(NamedTuple):
         np.savez(path, vocab=self.vocab, embeddings=self.embeddings)
 
     @classmethod
-    def load(cls, path: Path) -> "Model":
+    def load(cls, path: Path) -> "StaticEmbeddings":
         """Loads static word embedding model from disk"""
         npzfile = np.load(path)
         return cls(vocab=npzfile["vocab"], embeddings=npzfile["embeddings"])

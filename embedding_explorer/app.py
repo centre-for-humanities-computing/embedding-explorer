@@ -9,7 +9,7 @@ from dash_extensions.enrich import Dash, DashBlueprint
 
 from embedding_explorer.blueprints.dashboard import create_dashboard
 from embedding_explorer.blueprints.explorer import create_explorer
-from embedding_explorer.model import Model
+from embedding_explorer.model import StaticEmbeddings
 
 
 def get_dash_app(blueprint: DashBlueprint, **kwargs) -> Dash:
@@ -104,13 +104,13 @@ def run_app(
 
 
 def show_explorer(
-    model: Model, port: int = 8050, fuzzy_search: bool = False
+    model: StaticEmbeddings, port: int = 8050, fuzzy_search: bool = False
 ) -> Optional[threading.Thread]:
     """Visually inspect word embedding model with embedding-explorer.
 
     Parameters
     ----------
-    model: Model
+    model: StaticEmbeddings
         Named tuple of model vocabulary and matrix of embeddings.
     port: int
         Port for the app to run on.
@@ -132,13 +132,15 @@ def show_explorer(
 
 
 def show_dashboard(
-    models: Dict[str, Model], port: int = 8050, fuzzy_search: bool = False
+    models: Dict[str, StaticEmbeddings],
+    port: int = 8050,
+    fuzzy_search: bool = False,
 ) -> Optional[threading.Thread]:
     """Show dashboard for all given word embeddings.
 
     Parameters
     ----------
-    models: dict of str to Model
+    models: dict of str to StaticEmbeddings
         Mapping of model names to models.
     fuzzy_search: bool, default False
         Specifies whether you want to fuzzy search in the vocabulary.
