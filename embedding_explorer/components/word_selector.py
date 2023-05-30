@@ -41,13 +41,13 @@ def create_word_selector(
         print("Indexing vocabulary for fuzzy search")
         vectorizer = make_pipeline(
             TfidfVectorizer(
-                analyzer="char", ngram_range=(1, 5), max_features=50_000
+                analyzer="char", ngram_range=(1, 4), max_features=20_000
             ),
-            NMF(n_components=10),
+            NMF(n_components=25),
         )
         fuzzy_process = Process(
             vectorizer,
-            metric="euclidean",
+            metric="cosine",
             low_memory=True,
         )
         fuzzy_process.index(vocab)
