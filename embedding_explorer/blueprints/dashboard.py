@@ -7,12 +7,9 @@ from dash_extensions.enrich import Dash, DashBlueprint, dash, dcc, html
 
 from embedding_explorer.blueprints.explorer import create_explorer
 from embedding_explorer.components.model_card import create_card
-from embedding_explorer.model import StaticEmbeddings
 
 
-def create_dashboard(
-    models: Dict[str, StaticEmbeddings], fuzzy_search: bool = False
-):
+def create_dashboard(models: List[Dict], fuzzy_search: bool = False):
     """Creates dashboard for all static embedding models.
 
     Parameters
@@ -26,13 +23,15 @@ def create_dashboard(
     # Collecting cards and registering pages
     cards = []
     pages = {}
-    for model_name, model in models.items():
-        cards.append(create_card(model=model, model_name=model_name))
-        page = create_explorer(
-            model=model, model_name=model_name, fuzzy_search=fuzzy_search
+    for model_params in models:
+        page = create_explorer(**model_params)
+        cards.append(
+            create_card(
+                corpus=model_params["corpus"], model_name=model_params["name"]
+            )
         )
         page.register_callbacks(dashboard)
-        pages[model_name] = page.layout
+        pages[model_params["name"]] = page.layout
 
     dashboard.layout = html.Div(
         children=[

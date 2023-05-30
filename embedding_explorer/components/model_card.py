@@ -1,4 +1,5 @@
 import base64
+from typing import Iterable
 from urllib.parse import quote
 
 import dash_mantine_components as dmc
@@ -28,10 +29,10 @@ COOL_ICONS = [
 ]
 
 
-def create_card(model: StaticEmbeddings, model_name: str) -> DashBlueprint:
+def create_card(corpus: Iterable[str], model_name: str) -> DashBlueprint:
     """Creates card for model."""
     card = DashBlueprint()
-    thumbnail = generate_thumbnail(model)
+    thumbnail = generate_thumbnail(corpus)
     encoded_thumbnail = base64.b64encode(thumbnail.encode("utf-8")).decode(
         "utf-8"
     )

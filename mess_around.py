@@ -1,16 +1,19 @@
 from pathlib import Path
+from random import sample
 
-import numpy as np
-from gensim.models import KeyedVectors
+import pandas as pd
+from embetter.text import SentenceEncoder
 
 from embedding_explorer import show_dashboard, show_explorer
-from embedding_explorer.model import StaticEmbeddings
 
 
 def main():
-    kv = KeyedVectors.load("dat/glove-wiki-gigaword-50.gensim")
-    model = StaticEmbeddings.from_keyed_vectors(kv)
-    show_explorer(model=model)
+    data = pd.read_csv("abcnews-date-text.csv")
+    corpus = data.headline_text.to_list()
+    show_explorer(
+        corpus=corpus,
+        vectorizer=SentenceEncoder("all-mpnet-base-v2", device="cpu"),
+    )
 
 
 if __name__ == "__main__":

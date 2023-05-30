@@ -1,8 +1,9 @@
 """Prepares semantic kernels for the given seeds
 in a static word embedding model."""
-from typing import List, NamedTuple, Tuple
+from typing import List, NamedTuple, Optional, Tuple, Union
 
 import numpy as np
+from sklearn.base import BaseEstimator
 from sklearn.manifold import TSNE
 from sklearn.metrics import pairwise_distances
 
@@ -66,13 +67,31 @@ class SemanticKernel(NamedTuple):
 
 
 def create_semantic_kernel(
-    seed_ids: List[int],
+    selected: List[Union[int, str]],
     embeddings: np.ndarray,
-    vocab: np.ndarray,
+    corpus: np.ndarray,
+    vectorizer: Optional[BaseEstimator],
     n_first_level: int,
     n_second_level: int,
     metric: str = "cosine",
 ) -> SemanticKernel:
+    seed_ids = []
+    novel_texts = []
+    # Collecting all the ids of texts to use
+    for value in selected:
+        if isinstance(value, int):
+            seed_ids.append(value)
+        if isinstance(value, str):
+            novel_texts.append(value)
+    n_corpus = corpus.shape[0]
+    for i, _ in enumerate(novel_texts):
+        seed_ids.append(n_corpus + i)
+    # Transforming and concatenating novel texts
+    # to the embeddings if they occur.
+    if novel_texts:
+        novel_embeddings = vectorizer.transform(novel_texts)
+        embeddings = np.concatenate((embeddings, novel_embeddings))
+        corpus = np.concatenate((corpus, novel_texts))
     # Collecting connections
     first_level_connections = get_associations(
         seed_ids, embeddings, n_closest=n_first_level, metric=metric
@@ -115,7 +134,7 @@ def create_semantic_kernel(
         [first_level_connections, second_level_connections], axis=0
     )
     # Collecting vocab
-    kernel_vocab = vocab[kernel_tokens]
+    kernel_vocab = corpus[kernel_tokens]
     # Calculating distance matrix
     distance_matrix = calculate_dist_matrix(
         kernel_tokens, embeddings=embeddings

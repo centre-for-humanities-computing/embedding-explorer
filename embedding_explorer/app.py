@@ -3,9 +3,11 @@ import subprocess
 import sys
 import threading
 import time
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Iterable, List, Optional
 
+import numpy as np
 from dash_extensions.enrich import Dash, DashBlueprint
+from sklearn.base import BaseEstimator
 
 from embedding_explorer.blueprints.dashboard import create_dashboard
 from embedding_explorer.blueprints.explorer import create_explorer
@@ -104,14 +106,27 @@ def run_app(
 
 
 def show_explorer(
-    model: StaticEmbeddings, port: int = 8050, fuzzy_search: bool = False
+    corpus: Iterable[str],
+    vectorizer: Optional[BaseEstimator] = None,
+    embeddings: Optional[np.ndarray] = None,
+    port: int = 8050,
+    fuzzy_search: bool = False,
 ) -> Optional[threading.Thread]:
     """Visually inspect word embedding model with embedding-explorer.
 
     Parameters
     ----------
-    model: StaticEmbeddings
-        Named tuple of model vocabulary and matrix of embeddings.
+    corpus: iterable of string
+        Texts you intend to search in with the semantic explorer.
+    vectorizer: Transformer or None, default None
+        Model to vectorize texts with.
+        If not supplied the model is assumed to be a
+        static word embedding model, and the embeddings
+        parameter has to be supplied.
+    embeddings: ndarray of shape (n_corpus, n_features)
+        Embeddings of the texts in the corpus.
+        If not supplied, embeddings will be calculated using
+        the vectorizer.
     port: int
         Port for the app to run on.
     fuzzy_search: bool, default False
@@ -126,13 +141,18 @@ def show_explorer(
         If the app runs in a Jupyter notebook, work goes on on
         a background thread, this thread is returned.
     """
-    blueprint = create_explorer(model=model, fuzzy_search=fuzzy_search)
+    blueprint = create_explorer(
+        corpus=corpus,
+        vectorizer=vectorizer,
+        embeddings=embeddings,
+        fuzzy_search=fuzzy_search,
+    )
     app = get_dash_app(blueprint=blueprint, use_pages=False)
     return run_app(app, port=port)
 
 
 def show_dashboard(
-    models: Dict[str, StaticEmbeddings],
+    models: List[Dict],
     port: int = 8050,
     fuzzy_search: bool = False,
 ) -> Optional[threading.Thread]:
@@ -140,8 +160,9 @@ def show_dashboard(
 
     Parameters
     ----------
-    models: dict of str to StaticEmbeddings
-        Mapping of model names to models.
+    models: list of dicts
+        List of keyword arguments of all model explorers.
+        A "name" key and value has to be supplied for each one.
     fuzzy_search: bool, default False
         Specifies whether you want to fuzzy search in the vocabulary.
         This is recommended for production use, but the index takes
@@ -157,6 +178,10 @@ def show_dashboard(
         If the app runs in a Jupyter notebook, work goes on on
         a background thread, this thread is returned.
     """
+    if not all(["name" in kwargs for kwargs in models]):
+        raise ValueError(
+            "You have to supply a 'name' attribute for each model."
+        )
     blueprint, register_pages = create_dashboard(
         models=models, fuzzy_search=fuzzy_search
     )

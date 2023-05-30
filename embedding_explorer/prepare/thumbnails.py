@@ -1,9 +1,8 @@
 import string
+from typing import Iterable
 
 import numpy as np
 from wordcloud import WordCloud
-
-from embedding_explorer.model import StaticEmbeddings
 
 
 def is_alpha(word: str) -> bool:
@@ -21,19 +20,19 @@ COLORMAPS = [
 ]
 
 
-def generate_thumbnail(model: StaticEmbeddings) -> str:
+def generate_thumbnail(corpus: Iterable[str]) -> str:
     """Generates thumbnail for given model and returns it as SVG string."""
-    vocab = model.vocab
-    alphabetical = np.vectorize(is_alpha)(vocab)
-    if vocab.shape[0] > 30:
-        vocab = vocab[alphabetical]
-    n_vocab = vocab.shape[0]
+    corpus: np.ndarray = np.array(list(corpus))
+    alphabetical = np.vectorize(is_alpha)(corpus)
+    if corpus.shape[0] > 30:
+        corpus = corpus[alphabetical]
+    n_vocab = corpus.shape[0]
     n_top = min(n_vocab, 100)
     random_word_indices = np.random.randint(0, n_vocab, size=n_top)
     random_freqs = np.random.randint(0, 100, size=n_top)
     colormap = COLORMAPS[np.random.randint(0, len(COLORMAPS))]
     word_freqs = {
-        vocab[index]: freq
+        corpus[index]: freq
         for index, freq in zip(random_word_indices, random_freqs)
     }
     cloud = WordCloud(

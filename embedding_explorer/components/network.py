@@ -1,23 +1,22 @@
 """Component code of the network graph."""
-from typing import List
+from typing import List, Optional, Union
 
 import numpy as np
 import plotly.graph_objects as go
-from dash_extensions.enrich import (
-    DashBlueprint,
-    Input,
-    Output,
-    State,
-    dcc,
-    exceptions,
-)
+from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
+                                    exceptions)
+from sklearn.base import BaseEstimator
 
 from embedding_explorer.plots.network import plot_semantic_kernel
 from embedding_explorer.prepare.semkern import create_semantic_kernel
 
 
 def create_network(
-    vocab: np.ndarray, embeddings: np.ndarray, model_name: str = ""
+    corpus: np.ndarray,
+    embeddings: np.ndarray,
+    vectorizer: Optional[BaseEstimator],
+    model_name: str = "",
+    fuzzy_search: bool = False,
 ) -> DashBlueprint:
     """Creates Network component blueprint."""
     network = DashBlueprint()
@@ -41,7 +40,7 @@ def create_network(
     )
     def update_network_figure(
         n_clicks: int,
-        selected_words: List[int],
+        selected_words: List[Union[int, str]],
         n_first_level: int,
         n_second_level: int,
     ) -> go.Figure:
@@ -49,9 +48,10 @@ def create_network(
         if not selected_words or not n_clicks:
             raise exceptions.PreventUpdate
         kernel = create_semantic_kernel(
-            seed_ids=selected_words,
+            selected=selected_words,
             embeddings=embeddings,
-            vocab=vocab,
+            corpus=corpus,
+            vectorizer=vectorizer,
             n_first_level=n_first_level,
             n_second_level=n_second_level,
         )
