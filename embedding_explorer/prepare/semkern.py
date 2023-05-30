@@ -50,7 +50,7 @@ def calculate_dist_matrix(
     kernel_words: List[int], embeddings: np.ndarray
 ) -> np.ndarray:
     """Creates distance matrix of kernel words."""
-    delta = pairwise_distances(embeddings[kernel_words])
+    delta = pairwise_distances(embeddings[kernel_words], metric="cosine")
     # Cut connections between the word and itself.
     np.fill_diagonal(delta, 0.0)
     # Cut connections that are over median distance
