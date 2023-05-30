@@ -7,15 +7,17 @@ from dash_extensions.enrich import Dash, DashBlueprint, dash, dcc, html
 
 from embedding_explorer.blueprints.explorer import create_explorer
 from embedding_explorer.components.model_card import create_card
-from embedding_explorer.model import Model
+from embedding_explorer.model import StaticEmbeddings
 
 
-def create_dashboard(models: Dict[str, Model], fuzzy_search: bool = False):
-    """Creates dashboard for all embedding models.
+def create_dashboard(
+    models: Dict[str, StaticEmbeddings], fuzzy_search: bool = False
+):
+    """Creates dashboard for all static embedding models.
 
     Parameters
     ----------
-    models: dict of str to Model
+    models: dict of str to StaticEmbeddings
         Mapping of names to models.
     """
     print("Creating Dashboard")

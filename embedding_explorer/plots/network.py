@@ -1,14 +1,16 @@
 """Plotting utilities for networks."""
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Tuple
 
 import numpy as np
 import plotly.graph_objects as go
 from plotly.express.colors import cyclical, sample_colorscale
 
-from embedding_explorer.prepare.semkern import (SemanticKernel,
-                                                calculate_n_connections,
-                                                calculate_positions,
-                                                get_closest_seed)
+from embedding_explorer.prepare.semkern import (
+    SemanticKernel,
+    calculate_n_connections,
+    calculate_positions,
+    get_closest_seed,
+)
 
 
 def _edge_pos(edges: np.ndarray, x_y: np.ndarray) -> np.ndarray:

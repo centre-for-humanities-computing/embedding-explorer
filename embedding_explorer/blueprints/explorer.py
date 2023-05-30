@@ -5,11 +5,11 @@ from dash_extensions.enrich import DashBlueprint, dcc, html
 
 from embedding_explorer.components.network import create_network
 from embedding_explorer.components.word_selector import create_word_selector
-from embedding_explorer.model import Model
+from embedding_explorer.model import StaticEmbeddings
 
 
 def create_explorer(
-    model: Model, model_name: str = "", fuzzy_search: bool = False
+    model: StaticEmbeddings, model_name: str = "", fuzzy_search: bool = False
 ) -> DashBlueprint:
     # --------[ Collecting blueprints ]--------
     word_selector = create_word_selector(
