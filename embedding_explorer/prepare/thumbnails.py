@@ -3,7 +3,7 @@ import string
 import numpy as np
 from wordcloud import WordCloud
 
-from embedding_explorer.model import Model
+from embedding_explorer.model import StaticEmbeddings
 
 
 def is_alpha(word: str) -> bool:
@@ -21,7 +21,7 @@ COLORMAPS = [
 ]
 
 
-def generate_thumbnail(model: Model) -> str:
+def generate_thumbnail(model: StaticEmbeddings) -> str:
     """Generates thumbnail for given model and returns it as SVG string."""
     vocab = model.vocab
     alphabetical = np.vectorize(is_alpha)(vocab)
