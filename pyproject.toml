@@ -6,7 +6,7 @@ line-length=79
 
 [tool.poetry]
 name = "embedding-explorer"
-version = "0.2.1"
+version = "0.2.2"
 description = "Tools for interactive visual inspection of static word embedding models."
 authors = ["Márton Kardos <power.up1163@gmail.com>"]
 license = "MIT"
