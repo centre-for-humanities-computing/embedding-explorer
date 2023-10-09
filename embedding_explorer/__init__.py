@@ -1,3 +1,4 @@
-from embedding_explorer.app import get_dash_app, show_dashboard, show_explorer
+from embedding_explorer.app import show_dashboard, show_explorer
+from embedding_explorer.cards import Card
 
-__all__ = ["get_dash_app", "show_explorer", "show_dashboard"]
+__all__ = ["show_explorer", "show_dashboard", "Card"]
