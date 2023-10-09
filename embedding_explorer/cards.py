@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
@@ -6,7 +7,7 @@ from sklearn.base import BaseEstimator
 
 
 @dataclass
-class Card:
+class Card(Mapping):
     """Contains information about an embedding model card that should be
     displayed on the dashboard.
 
@@ -35,3 +36,9 @@ class Card:
     vectorizer: Optional[BaseEstimator] = None
     embeddings: Optional[np.ndarray] = None
     fuzzy_search: bool = False
+
+    def __getitem__(self, key: str):
+        return getattr(self, key)
+
+    def keys(self):
+        return ["name", "corpus", "vectorizer", "embeddings", "fuzzy_search"]
