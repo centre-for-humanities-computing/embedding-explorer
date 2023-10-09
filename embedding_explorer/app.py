@@ -160,7 +160,7 @@ def show_dashboard(
 
     Parameters
     ----------
-    models: list of Card
+    cards: list of Card
         Contains description of a model card that should appear in
         the dashboard.
 
