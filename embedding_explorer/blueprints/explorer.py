@@ -8,7 +8,6 @@ from sklearn.base import BaseEstimator
 
 from embedding_explorer.components.network import create_network
 from embedding_explorer.components.word_selector import create_word_selector
-from embedding_explorer.model import StaticEmbeddings
 
 
 def create_explorer(

@@ -7,7 +7,6 @@ import numpy as np
 from dash_extensions.enrich import DashBlueprint, html
 from dash_iconify import DashIconify
 
-from embedding_explorer.model import StaticEmbeddings
 from embedding_explorer.prepare.thumbnails import generate_thumbnail
 
 COOL_ICONS = [

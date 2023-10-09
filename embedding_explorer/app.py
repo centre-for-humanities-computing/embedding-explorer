@@ -12,7 +12,6 @@ from sklearn.base import BaseEstimator
 from embedding_explorer.blueprints.dashboard import create_dashboard
 from embedding_explorer.blueprints.explorer import create_explorer
 from embedding_explorer.cards import Card
-from embedding_explorer.model import StaticEmbeddings
 
 
 def get_dash_app(blueprint: DashBlueprint, **kwargs) -> Dash:
