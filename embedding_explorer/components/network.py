@@ -26,7 +26,7 @@ def create_network(
         responsive=True,
         config={"scrollZoom": True},
         animation_options={"frame": {"redraw": True}},
-        animate=True,
+        animate=False,
         className="h-full w-full",
     )
 

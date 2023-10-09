@@ -78,20 +78,19 @@ def add_edges(
     opacities = np.array(
         [-distance_matrix[start, end] for start, end in edges]
     )
-    opacities = minmax(opacities) / 1.5
+    opacities = minmax(opacities + 1)  # / 1.5
     for (start, end), opacity in zip(edges, opacities):
         fig.add_shape(
-            dict(
-                type="line",
-                xref="x",
-                yref="y",
-                x0=x[start],
-                y0=y[start],
-                x1=x[end],
-                y1=y[end],
-                layer="below",
-                opacity=opacity,
-            )
+            type="line",
+            xref="x",
+            yref="y",
+            x0=x[start],
+            y0=y[start],
+            x1=x[end],
+            y1=y[end],
+            layer="below",
+            opacity=opacity,
+            line=dict(width=3),
         )
     return fig
 
@@ -106,31 +105,55 @@ def get_seed_colors(kernel: SemanticKernel) -> np.ndarray:
     return np.array(colors)
 
 
-def create_node_traces(
-    kernel: SemanticKernel, x: np.ndarray, y: np.ndarray
-) -> Tuple[go.Scatter, go.Scatter, go.Scatter]:
+def add_nodes(
+    fig: go.Figure, kernel: SemanticKernel, x: np.ndarray, y: np.ndarray
+) -> go.Figure:
     """Creates node traces for the different levels of association."""
     closest_seed = get_closest_seed(kernel)
     scale = get_seed_colors(kernel)
     is_seed = kernel.priorities == 0
     sizes = calculate_n_connections(kernel.connections)
-    sizes = (sizes / np.max(sizes)) * 60
+    sizes = (sizes / np.max(sizes)) * 100
+    annotations = []
     seed_trace = go.Scatter(
         name="",
-        text=kernel.vocabulary[is_seed],
         x=x[is_seed],
         y=y[is_seed],
         mode="markers+text",
         hoverinfo="text",
         marker=dict(
-            color=scale[closest_seed[is_seed]], size=sizes[is_seed], opacity=1
+            color=scale[closest_seed[is_seed]],
+            size=sizes[is_seed],
+            opacity=1,
+            line=dict(width=3, color="black"),
         ),
-        textfont=dict(size=12, color="white"),
     )
+    for node_x, node_y, text, color in zip(
+        x[is_seed],
+        y[is_seed],
+        kernel.vocabulary[is_seed],
+        scale[closest_seed[is_seed]],
+    ):
+        annotations.append(
+            dict(
+                x=node_x,
+                y=node_y,
+                text=f"<b>{text.upper()}</b>",
+                bgcolor=color,
+                font=dict(size=18, color="white"),
+                align="center",
+                borderpad=4,
+                ax=0,
+                ay=0,
+                xref="x",
+                yref="y",
+                showarrow=False,
+                opacity=0.9,
+            )
+        )
     is_first_level = kernel.priorities == 1
     first_level_trace = go.Scatter(
         name="",
-        text=kernel.vocabulary[is_first_level],
         x=x[is_first_level],
         y=y[is_first_level],
         mode="markers+text",
@@ -138,9 +161,33 @@ def create_node_traces(
         marker=dict(
             color=scale[closest_seed[is_first_level]],
             size=sizes[is_first_level],
-            opacity=0.6,
+            line=dict(width=2, color="#0C090A"),
+            opacity=1,
         ),
     )
+    for node_x, node_y, text, color in zip(
+        x[is_first_level],
+        y[is_first_level],
+        kernel.vocabulary[is_first_level],
+        scale[closest_seed[is_first_level]],
+    ):
+        annotations.append(
+            dict(
+                x=node_x,
+                y=node_y,
+                text=f"<b>{text}</b>",
+                bgcolor=color,
+                font=dict(size=16, color="white"),
+                align="center",
+                borderpad=4,
+                ax=0,
+                ay=0,
+                xref="x",
+                yref="y",
+                showarrow=False,
+                opacity=0.9,
+            )
+        )
     is_second_level = kernel.priorities == 2
     second_level_trace = go.Scatter(
         name="",
@@ -152,21 +199,26 @@ def create_node_traces(
         marker=dict(
             color=scale[closest_seed[is_second_level]],
             size=sizes[is_second_level],
-            opacity=0.4,
+            opacity=1,
+            line=dict(width=2, color="#0C090A"),
         ),
+        textfont=dict(size=16, color=scale[closest_seed[is_second_level]]),
+        textposition="bottom center",
     )
-    return second_level_trace, first_level_trace, seed_trace
+    fig.add_trace(second_level_trace)
+    fig.add_trace(first_level_trace)
+    fig.add_trace(seed_trace)
+    for annotation in annotations[::-1]:
+        fig.add_annotation(**annotation)
+    return fig
 
 
 def plot_semantic_kernel(kernel: SemanticKernel) -> go.Figure:
     """Plots semantic kernel."""
     x, y = calculate_positions(kernel.distance_matrix)
 
-    node_traces = create_node_traces(x=x, y=y, kernel=kernel)
-    # edge_trace = create_edge_trace(x=x, y=y, edges=kernel.connections)
-
-    # figure = go.Figure(data=[edge_trace, *node_traces])
-    figure = go.Figure(data=[*node_traces])
+    figure = go.Figure()
+    add_nodes(figure, kernel, x, y)
     add_edges(
         figure,
         edges=kernel.connections,
