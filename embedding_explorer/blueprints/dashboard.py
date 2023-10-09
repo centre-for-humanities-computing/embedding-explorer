@@ -1,31 +1,33 @@
 """Blueprint for overview dashboard."""
-from typing import Callable, Dict, List, Tuple
+from typing import List
 from urllib.parse import quote
 
 import dash_mantine_components as dmc
-from dash_extensions.enrich import Dash, DashBlueprint, dash, dcc, html
+from dash_extensions.enrich import DashBlueprint, dash, html
 
 from embedding_explorer.blueprints.explorer import create_explorer
+from embedding_explorer.cards import Card
 from embedding_explorer.components.model_card import create_card
 
 
-def create_dashboard(models: List[Dict], fuzzy_search: bool = False):
+def create_dashboard(cards: List[Card]):
     """Creates dashboard for all static embedding models.
 
     Parameters
     ----------
-    models: dict of str to StaticEmbeddings
-        Mapping of names to models.
+    models: list of Card
+        Contains description of a model card that should appear in
+        the dashboard.
     """
     print("Creating Dashboard")
     dashboard = DashBlueprint()
 
     # Collecting cards and registering pages
-    cards = []
+    card_components = []
     pages = {}
-    for model_params in models:
+    for model_params in cards:
         page = create_explorer(**model_params)
-        cards.append(
+        card_components.append(
             create_card(
                 corpus=model_params["corpus"], model_name=model_params["name"]
             )
@@ -40,7 +42,9 @@ def create_dashboard(models: List[Dict], fuzzy_search: bool = False):
                 className="text-2xl pt-8 pb-3 px-8",
             ),
             dmc.Grid(
-                children=[dmc.Col(card.layout, span=1) for card in cards],
+                children=[
+                    dmc.Col(card.layout, span=1) for card in card_components
+                ],
                 gutter="lg",
                 grow=True,
                 columns=3,

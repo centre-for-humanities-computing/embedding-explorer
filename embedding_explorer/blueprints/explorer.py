@@ -18,6 +18,7 @@ def create_explorer(
     name: str = "",
     fuzzy_search: bool = False,
 ) -> DashBlueprint:
+    print(f"Creating explorer with name: {name}")
     # Checking parameters
     if embeddings is None and vectorizer is None:
         raise ValueError(
@@ -36,12 +37,14 @@ def create_explorer(
         corpus=corpus,
         vectorizer=vectorizer,
         fuzzy_search=fuzzy_search,
+        model_name=name,
     )
     network = create_network(
         corpus=corpus,
         vectorizer=vectorizer,
         embeddings=embeddings,
         fuzzy_search=fuzzy_search,
+        model_name=name,
     )
     blueprints = [
         word_selector,
@@ -86,7 +89,9 @@ def create_explorer(
                                                 min=0,
                                                 stepHoldDelay=500,
                                                 stepHoldInterval=100,
-                                                id=f"{name}_first_level_association",
+                                                id="{}_first_level_association".format(
+                                                    name
+                                                ),
                                                 size="md",
                                                 className="mb-3",
                                             ),
@@ -98,7 +103,9 @@ def create_explorer(
                                                 min=0,
                                                 stepHoldDelay=500,
                                                 stepHoldInterval=100,
-                                                id=f"{name}_second_level_association",
+                                                id="{}_second_level_association".format(
+                                                    name
+                                                ),
                                                 size="md",
                                             ),
                                         ]
@@ -117,7 +124,7 @@ def create_explorer(
                         from-cyan-500 via-blue-500 to-blue-400 bg-size-200
                         hover:font-bold font-normal
                         """,
-                        id=f"{name}_submit_button",
+                        id="{}_submit_button".format(name),
                     ),
                 ],
                 className="""

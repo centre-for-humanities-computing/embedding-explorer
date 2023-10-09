@@ -3,8 +3,15 @@ from typing import List, Optional, Union
 
 import dash_mantine_components as dmc
 import numpy as np
-from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
-                                    exceptions, html)
+from dash_extensions.enrich import (
+    DashBlueprint,
+    Input,
+    Output,
+    State,
+    dcc,
+    exceptions,
+    html,
+)
 from neofuzz import Process
 from sklearn.base import BaseEstimator
 from sklearn.decomposition import NMF

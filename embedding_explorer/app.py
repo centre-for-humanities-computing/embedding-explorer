@@ -11,6 +11,7 @@ from sklearn.base import BaseEstimator
 
 from embedding_explorer.blueprints.dashboard import create_dashboard
 from embedding_explorer.blueprints.explorer import create_explorer
+from embedding_explorer.cards import Card
 from embedding_explorer.model import StaticEmbeddings
 
 
@@ -152,22 +153,16 @@ def show_explorer(
 
 
 def show_dashboard(
-    models: List[Dict],
+    cards: List[Card],
     port: int = 8050,
-    fuzzy_search: bool = False,
 ) -> Optional[threading.Thread]:
     """Show dashboard for all given word embeddings.
 
     Parameters
     ----------
-    models: list of dicts
-        List of keyword arguments of all model explorers.
-        A "name" key and value has to be supplied for each one.
-    fuzzy_search: bool, default False
-        Specifies whether you want to fuzzy search in the vocabulary.
-        This is recommended for production use, but the index takes
-        time to set up, therefore the startup time is expected to
-        be greater.
+    models: list of Card
+        Contains description of a model card that should appear in
+        the dashboard.
 
     port: int
         Port for the app to run on.
@@ -178,13 +173,11 @@ def show_dashboard(
         If the app runs in a Jupyter notebook, work goes on on
         a background thread, this thread is returned.
     """
-    if not all(["name" in kwargs for kwargs in models]):
+    if not all(["name" in kwargs for kwargs in cards]):
         raise ValueError(
             "You have to supply a 'name' attribute for each model."
         )
-    blueprint, register_pages = create_dashboard(
-        models=models, fuzzy_search=fuzzy_search
-    )
+    blueprint, register_pages = create_dashboard(cards)
     app = get_dash_app(blueprint=blueprint, use_pages=True)
     register_pages()
     return run_app(app, port=port)
