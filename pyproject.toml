@@ -15,14 +15,14 @@ packages = [{include = "embedding_explorer"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8.0"
-dash = "~2.7.1"
-dash-extensions = "~0.1.10"
-dash-mantine-components = "~0.11.1"
-dash-iconify = "~0.1.2"
-scikit-learn = "~1.1.0"
+dash = "^2.7.1"
+dash-extensions = "^0.1.10"
+dash-mantine-components = "^0.11.1"
+dash-iconify = "^0.1.2"
+scikit-learn = "^1.1.0"
 numpy = ">=1.23.0"
-pandas = "~1.5.2"
-wordcloud = "~1.8.2.2"
+pandas = ">=1.5.2"
+wordcloud = "^1.8.2.2"
 neofuzz = ">=0.1.2"
 
 
