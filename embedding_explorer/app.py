@@ -6,9 +6,11 @@ import time
 from typing import Callable, Dict, Iterable, List, Optional
 
 import numpy as np
+import pandas as pd
 from dash_extensions.enrich import Dash, DashBlueprint
 from sklearn.base import BaseEstimator
 
+from embedding_explorer.blueprints.clustering import create_clustering_app
 from embedding_explorer.blueprints.dashboard import create_dashboard
 from embedding_explorer.blueprints.explorer import create_explorer
 from embedding_explorer.cards import Card
@@ -146,6 +148,23 @@ def show_explorer(
         vectorizer=vectorizer,
         embeddings=embeddings,
         fuzzy_search=fuzzy_search,
+    )
+    app = get_dash_app(blueprint=blueprint, use_pages=False)
+    return run_app(app, port=port)
+
+
+def show_clustering(
+    corpus: Iterable[str],
+    vectorizer: Optional[BaseEstimator] = None,
+    embeddings: Optional[np.ndarray] = None,
+    metadata: Optional[pd.DataFrame] = None,
+    port: int = 8050,
+) -> Optional[threading.Thread]:
+    blueprint = create_clustering_app(
+        corpus=corpus,
+        vectorizer=vectorizer,
+        embeddings=embeddings,
+        metadata=metadata,
     )
     app = get_dash_app(blueprint=blueprint, use_pages=False)
     return run_app(app, port=port)
