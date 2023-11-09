@@ -1,4 +1,5 @@
 """Blueprint for the clustering application."""
+import warnings
 from typing import Iterable, Optional
 
 import dash_mantine_components as dmc
@@ -13,12 +14,14 @@ from dash_extensions.enrich import (
     dcc,
     html,
 )
+from dash_iconify import DashIconify
 from sklearn.base import BaseEstimator
 
 from embedding_explorer.components.clustering import create_cluster_map
 from embedding_explorer.components.clustering_settings import (
     create_clustering_settings,
 )
+from embedding_explorer.components.plot_settings import create_plot_settings
 from embedding_explorer.prepare.clustering import (
     get_clustering,
     get_projection,
@@ -47,7 +50,7 @@ def create_clustering_app(
     if embeddings is None:
         embeddings = vectorizer.transform(corpus)
     # --------[ Collecting blueprints ]--------
-    cluster_map = create_cluster_map(name)
+    cluster_map = create_cluster_map(name, metadata)
     blueprints = [cluster_map]
 
     # --------[ Creating app blueprint ]--------
@@ -55,24 +58,42 @@ def create_clustering_app(
     app_blueprint.layout = html.Div(
         [
             html.Div(cluster_map.layout, className="flex-1 bg-red"),
+            create_plot_settings(name, metadata),
+            dcc.Store(id="{}_query".format(name), data=None),
             dcc.Store(id="{}_inference_data".format(name), data=None),
-            html.Div(
+            dmc.Modal(
+                title="Parameters",
+                children=html.Div(
+                    [
+                        *create_clustering_settings(name),
+                    ],
+                    className="""
+                    bg-white rounded p-4 flex-col flex space-y-4 items-stretch
+                    w-full
+                    """,
+                ),
+                zIndex=10000,
+                centered=True,
+                opened=True,
+                id="{}_param_container".format(name),
+            ),
+            html.Button(
                 [
-                    dmc.Text("Parameters", size="lg", align="center"),
-                    *create_clustering_settings(name),
+                    "Open Parameters",
+                    html.Div(className="w-3"),
+                    DashIconify(icon="mingcute:settings-6-line", width=30),
                 ],
+                id="{}_open_params".format(name),
                 className="""
-                fixed w-1/3 bottom-8 right-8
-                bg-white shadow-2xl rounded-xl
-                p-7 flex-col flex space-y-4
-                hover:opacity-100 opacity-30
-                transition-all duration-500
+                fixed bottom-8 right-8 shadow-md
+                flex flex-row py-3 px-5 rounded-full
+                bg-blue-500 hover:bg-blue-600 transition
+                text-white items-center
                 """,
             ),
         ],
         className="""
             fixed w-full h-full flex-col flex items-stretch
-            bg-white p-3 space-y-3
         """,
         id="clustering_container",
     )
@@ -119,6 +140,39 @@ def create_clustering_app(
         Output(f"{name}_n_clusters", "disabled"),
         Input(f"{name}_clustering", "value"),
     )
+    app_blueprint.clientside_callback(
+        """
+        function(n1, n2, current) {
+            return !current;
+        }
+        """,
+        Output(f"{name}_param_container", "opened"),
+        Input(f"{name}_submit_button", "n_clicks"),
+        Input(f"{name}_open_params", "n_clicks"),
+        State(f"{name}_param_container", "opened"),
+        prevent_initial_callback=True,
+    )
+
+    @app_blueprint.callback(
+        Output(f"{name}_query_input", "icon"),
+        Output(f"{name}_query", "data"),
+        Input(f"{name}_query_input", "value"),
+    )
+    def validate_query(query: str):
+        if not query:
+            return "", None
+        try:
+            metadata.head().query(query)
+            return DashIconify(icon="mdi:tick", color="green"), query
+        except Exception as e:
+            warnings.warn(f"Failed query: {e}")
+            return (
+                DashIconify(
+                    icon="material-symbols-light:mood-bad-outline",
+                    color="red",
+                ),
+                None,
+            )
 
     @app_blueprint.callback(
         Output(f"{name}_inference_data", "data"),

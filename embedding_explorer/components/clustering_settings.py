@@ -55,8 +55,8 @@ def create_clustering_settings(name):
                     label="Reduced Dimensionality",
                     description="Number of dimensions to reduce embeddings to.",
                     value=10,
-                    min=5,
-                    step=10,
+                    min=2,
+                    step=5,
                     className="hidden",
                 ),
             ],
@@ -120,7 +120,7 @@ def create_clustering_settings(name):
                     label="Cluster Number",
                     description="Number of clusters to find.",
                     value=10,
-                    min=5,
+                    min=2,
                     step=1,
                     className="hidden",
                 ),
@@ -177,12 +177,12 @@ def create_clustering_settings(name):
         html.Button(
             "Submit",
             className="""
-                        rounded-xl text-white text-bold text-md
-                        p-3 mt-5
-                        transition-all duration-200 bg-gradient-to-bl
-                        from-cyan-500 via-blue-500 to-blue-400 bg-size-200
-                        hover:font-bold font-normal
-                        """,
+            rounded-xl text-white text-bold text-md
+            p-3 mt-5
+            transition-all duration-200 bg-gradient-to-bl
+            from-cyan-500 via-blue-500 to-blue-400 bg-size-200
+            hover:font-bold font-normal
+            """,
             id="{}_submit_button".format(name),
         ),
     ]
