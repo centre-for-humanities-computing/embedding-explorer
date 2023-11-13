@@ -4,6 +4,14 @@ from dash_extensions.enrich import html
 
 
 def create_plot_settings(name: str, metadata: pd.DataFrame):
+    if metadata is None:
+        visibility = "hidden"
+        columns = []
+        numeric_columns = []
+    else:
+        visibility = "visible"
+        columns = metadata.columns
+        numeric_columns = metadata.select_dtypes(include="number").columns
     return html.Div(
         children=[
             dmc.Select(
@@ -17,10 +25,7 @@ def create_plot_settings(name: str, metadata: pd.DataFrame):
                         "label": "Cluster Labels",
                     },
                 ]
-                + [
-                    {"value": column, "label": column}
-                    for column in metadata.columns
-                ],
+                + [{"value": column, "label": column} for column in columns],
             ),
             dmc.Select(
                 label="Marker size",
@@ -35,7 +40,7 @@ def create_plot_settings(name: str, metadata: pd.DataFrame):
                 ]
                 + [
                     {"value": column, "label": column}
-                    for column in metadata.columns
+                    for column in numeric_columns
                 ],
             ),
             dmc.Select(
@@ -49,10 +54,7 @@ def create_plot_settings(name: str, metadata: pd.DataFrame):
                         "label": "None",
                     },
                 ]
-                + [
-                    {"value": column, "label": column}
-                    for column in metadata.columns
-                ],
+                + [{"value": column, "label": column} for column in columns],
             ),
             dmc.TextInput(
                 id="{}_query_input".format(name),
@@ -70,5 +72,6 @@ def create_plot_settings(name: str, metadata: pd.DataFrame):
         className="""
         flex-row w-full flex justify-start items-center content-center
         space-x-8 grow-0 shrink p-5 max-h-max
-        """,
+        """
+        + visibility,
     )

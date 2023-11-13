@@ -4,18 +4,12 @@ from typing import Dict, List, Optional, Union
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from dash_extensions.enrich import (
-    DashBlueprint,
-    Input,
-    Output,
-    State,
-    dcc,
-    exceptions,
-)
+from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
+                                    exceptions)
 
 
 def create_cluster_map(
-    model_name: str, metadata: pd.DataFrame
+    model_name: str, metadata: Optional[pd.DataFrame]
 ) -> DashBlueprint:
     """Creates Network component blueprint."""
     network = DashBlueprint()

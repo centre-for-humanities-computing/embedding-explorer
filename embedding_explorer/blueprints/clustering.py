@@ -6,27 +6,18 @@ import dash_mantine_components as dmc
 import numpy as np
 import pandas as pd
 from dash.exceptions import PreventUpdate
-from dash_extensions.enrich import (
-    DashBlueprint,
-    Input,
-    Output,
-    State,
-    dcc,
-    html,
-)
+from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
+                                    html)
 from dash_iconify import DashIconify
 from sklearn.base import BaseEstimator
 
 from embedding_explorer.components.clustering import create_cluster_map
-from embedding_explorer.components.clustering_settings import (
-    create_clustering_settings,
-)
+from embedding_explorer.components.clustering_settings import \
+    create_clustering_settings
 from embedding_explorer.components.plot_settings import create_plot_settings
-from embedding_explorer.prepare.clustering import (
-    get_clustering,
-    get_projection,
-    get_reduced_embeddings,
-)
+from embedding_explorer.prepare.clustering import (get_clustering,
+                                                   get_projection,
+                                                   get_reduced_embeddings)
 
 
 def create_clustering_app(
@@ -51,6 +42,8 @@ def create_clustering_app(
         embeddings = vectorizer.transform(corpus)
     # --------[ Collecting blueprints ]--------
     cluster_map = create_cluster_map(name, metadata)
+    clustering_settings = create_clustering_settings(name)
+    plot_settings = create_plot_settings(name, metadata)
     blueprints = [cluster_map]
 
     # --------[ Creating app blueprint ]--------
@@ -58,14 +51,14 @@ def create_clustering_app(
     app_blueprint.layout = html.Div(
         [
             html.Div(cluster_map.layout, className="flex-1 bg-red"),
-            create_plot_settings(name, metadata),
+            plot_settings,
             dcc.Store(id="{}_query".format(name), data=None),
             dcc.Store(id="{}_inference_data".format(name), data=None),
             dmc.Modal(
                 title="Parameters",
                 children=html.Div(
                     [
-                        *create_clustering_settings(name),
+                        *clustering_settings,
                     ],
                     className="""
                     bg-white rounded p-4 flex-col flex space-y-4 items-stretch
