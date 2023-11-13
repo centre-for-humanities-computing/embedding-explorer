@@ -136,27 +136,6 @@ show_dashboard(cards)
 ![Screenshot of the Dashboard](assets/dashboard_screenshot.png)
 
 
-## Dashboard
-
-If you have multiple models to examine the same corpus or multiple corpora, that you want to examine with the same model, then
-you can create a dashboard containing all of these options, that users will be able to click on and that takes them to the appropriate explorer page.
-You can use both the network exploration app and the clustering app in this manner, that way you can have a unified dashboard for all of your embedding models.
-
-For this we will have to assemble these options into a list of `Card` objects, that contain the information about certain pages.
-
-In the following example I will set up two different sentence transformers with the corpus of four grams from the previous example.
-
-```python
-from embetter.text import SentenceEncoder
-from embedding_explorer import show_dashboard
-from embedding_explorer.cards import NetworkCard, ClusteringCard
-
-cards = [
-    NetworkCard("MiniLM", corpus=four_grams, vectorizer=SentenceEncoder("all-MiniLM-L12-v2")),
-    NetworkCard("MPNET", corpus=four_grams, vectorizer=SentenceEncoder("all-mpnet-base-v2")),
-]
-show_dashboard(cards)
-```
-
-![Screenshot of the Dashboard](assets/dashboard_screenshot.png)
-
+## Documentation
+Thorough documentation and API reference of embedding-explorer is currently under development,
+until then we do not recommend its usage in production for third parties.
