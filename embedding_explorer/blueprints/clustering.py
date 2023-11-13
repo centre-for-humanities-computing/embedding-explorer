@@ -21,25 +21,24 @@ from embedding_explorer.prepare.clustering import (get_clustering,
 
 
 def create_clustering_app(
-    corpus: Iterable[str],
+    corpus: Optional[Iterable[str]] = None,
     vectorizer: Optional[BaseEstimator] = None,
     embeddings: Optional[np.ndarray] = None,
     metadata: Optional[pd.DataFrame] = None,
     name: str = "",
 ) -> DashBlueprint:
     # Checking parameters
-    if embeddings is None and vectorizer is None:
+    if corpus is None and (embeddings is None or vectorizer is None):
         raise ValueError(
-            "Either a vectorizer or static embeddings have to be supplied."
-        )
-    corpus = np.array(list(corpus))
-    if (embeddings is not None) and (embeddings.shape[0] != corpus.shape[0]):
-        raise ValueError(
-            "The supplied corpus is not the same length"
-            " as the embedding matrix."
+            "You either have to specify a corpus along with a vectorizer or an array of static embeddings."
         )
     if embeddings is None:
         embeddings = vectorizer.transform(corpus)
+    if embeddings is not None and metadata is not None:
+        if embeddings.shape[0] != len(metadata.index):
+            raise ValueError(
+                "Embeddings and metadata have to have the same length."
+            )
     # --------[ Collecting blueprints ]--------
     cluster_map = create_cluster_map(name, metadata)
     clustering_settings = create_clustering_settings(name)
@@ -86,7 +85,7 @@ def create_clustering_app(
             ),
         ],
         className="""
-            fixed w-full h-full flex-col flex items-stretch
+            fixed w-full h-full flex-col flex items-stretch p-8
         """,
         id="clustering_container",
     )
