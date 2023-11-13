@@ -80,6 +80,7 @@ def add_edges(
     )
     opacities = minmax(opacities + 1)  # / 1.5
     for (start, end), opacity in zip(edges, opacities):
+        distance = distance_matrix[start, end]
         fig.add_shape(
             type="line",
             xref="x",
@@ -88,6 +89,7 @@ def add_edges(
             y0=y[start],
             x1=x[end],
             y1=y[end],
+            label=dict(text=f"{distance:.2f}", font=dict(size=12)),
             layer="below",
             opacity=opacity,
             line=dict(width=3),

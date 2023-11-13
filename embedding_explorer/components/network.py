@@ -56,8 +56,6 @@ def create_network(
             n_second_level=n_second_level,
         )
         figure = plot_semantic_kernel(kernel)
-        figure.update(layout_coloraxis_showscale=False)
-        figure.update_traces(marker_showscale=False)
         # figure.show()
         figure.update_layout(dragmode="pan")
         return figure

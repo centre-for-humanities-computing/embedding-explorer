@@ -93,15 +93,6 @@ def run_app(
             port, anchor_text="Click this link to open topicwizard."
         )
         return thread
-
-    elif is_notebook():
-        from IPython.display import IFrame, display
-
-        thread = threading.Thread(target=run_silent(app, port))
-        thread.start()
-        time.sleep(4)
-        display(IFrame(src=url, width="1200", height="1000"))
-        return thread
     else:
         open_url(url)
         app.run_server(port=port)
