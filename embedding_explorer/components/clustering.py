@@ -9,7 +9,10 @@ from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
 
 
 def create_cluster_map(
-    model_name: str, metadata: Optional[pd.DataFrame]
+    model_name: str,
+    metadata: Optional[pd.DataFrame],
+    hover_name: Optional[str],
+    hover_data,
 ) -> DashBlueprint:
     """Creates Network component blueprint."""
     network = DashBlueprint()
@@ -54,6 +57,10 @@ def create_cluster_map(
             params["size"] = marker_size
         if marker_label != "none":
             params["text"] = marker_label
+        if hover_name is not None:
+            params["hover_name"] = hover_name
+        if hover_data is not None:
+            params["hover_data"] = hover_data
         figure = px.scatter(data, **params)
         figure.update_layout(
             template="plotly_white",

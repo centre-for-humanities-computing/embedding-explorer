@@ -107,14 +107,14 @@ def run_app(
         app.run_server(port=port)
 
 
-def show_explorer(
+def show_network_explorer(
     corpus: Iterable[str],
     vectorizer: Optional[BaseEstimator] = None,
     embeddings: Optional[np.ndarray] = None,
     port: int = 8050,
     fuzzy_search: bool = False,
 ) -> Optional[threading.Thread]:
-    """Visually inspect word embedding model with embedding-explorer.
+    """Visually inspect semantic networks emerging in an embedding model.
 
     Parameters
     ----------
@@ -154,10 +154,12 @@ def show_explorer(
 
 
 def show_clustering(
-    corpus: Iterable[str],
+    corpus: Optional[Iterable[str]] = None,
     vectorizer: Optional[BaseEstimator] = None,
     embeddings: Optional[np.ndarray] = None,
     metadata: Optional[pd.DataFrame] = None,
+    hover_name: Optional[str] = None,
+    hover_data=None,
     port: int = 8050,
 ) -> Optional[threading.Thread]:
     blueprint = create_clustering_app(
@@ -165,6 +167,8 @@ def show_clustering(
         vectorizer=vectorizer,
         embeddings=embeddings,
         metadata=metadata,
+        hover_name=hover_name,
+        hover_data=hover_data,
     )
     app = get_dash_app(blueprint=blueprint, use_pages=False)
     return run_app(app, port=port)

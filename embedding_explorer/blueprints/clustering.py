@@ -26,9 +26,11 @@ def create_clustering_app(
     embeddings: Optional[np.ndarray] = None,
     metadata: Optional[pd.DataFrame] = None,
     name: str = "",
+    hover_name: Optional[str] = None,
+    hover_data=None,
 ) -> DashBlueprint:
     # Checking parameters
-    if corpus is None and (embeddings is None or vectorizer is None):
+    if (embeddings is None) and (corpus is None and vectorizer is None):
         raise ValueError(
             "You either have to specify a corpus along with a vectorizer or an array of static embeddings."
         )
@@ -40,7 +42,7 @@ def create_clustering_app(
                 "Embeddings and metadata have to have the same length."
             )
     # --------[ Collecting blueprints ]--------
-    cluster_map = create_cluster_map(name, metadata)
+    cluster_map = create_cluster_map(name, metadata, hover_name, hover_data)
     clustering_settings = create_clustering_settings(name)
     plot_settings = create_plot_settings(name, metadata)
     blueprints = [cluster_map]
