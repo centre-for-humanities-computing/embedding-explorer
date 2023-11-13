@@ -1,5 +1,5 @@
 import base64
-from typing import Iterable
+from typing import Iterable, Optional
 from urllib.parse import quote
 
 import dash_mantine_components as dmc
@@ -28,7 +28,9 @@ COOL_ICONS = [
 ]
 
 
-def create_card(corpus: Iterable[str], model_name: str) -> DashBlueprint:
+def create_card(
+    corpus: Optional[Iterable[str]], model_name: str
+) -> DashBlueprint:
     """Creates card for model."""
     card = DashBlueprint()
     thumbnail = generate_thumbnail(corpus)

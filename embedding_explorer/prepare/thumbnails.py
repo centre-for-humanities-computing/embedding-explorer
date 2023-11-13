@@ -1,7 +1,9 @@
 import string
-from typing import Iterable
+from random import sample
+from typing import Iterable, Optional
 
 import numpy as np
+import plotly.express as px
 from wordcloud import WordCloud
 
 
@@ -19,24 +21,41 @@ COLORMAPS = [
     "Blues",
 ]
 
+COLORSCALES = px.colors.named_colorscales()
 
-def generate_thumbnail(corpus: Iterable[str]) -> str:
+
+def create_random_scatter():
+    n = 100
+    x = np.random.rand(n)
+    y = np.random.rand(n)
+    colors = np.random.rand(n)
+    sz = np.random.rand(n) * 30
+    colorscale = COLORSCALES[np.random.randint(0, len(COLORSCALES))]
+    fig = px.scatter(
+        x=x,
+        y=y,
+        color=colors,
+        size=sz,
+        color_continuous_scale=colorscale,
+        template="plotly_white",
+    )
+    fig.update_layout(width=800, height=600)
+    fig.update_xaxes(zeroline=False, visible=False)
+    fig.update_yaxes(zeroline=False, visible=False)
+    fig.update_coloraxes(showscale=False)
+    image_bytes = fig.to_image(format="svg")
+    return image_bytes.decode("utf-8")
+
+
+def generate_thumbnail(corpus: Optional[Iterable[str]]) -> str:
     """Generates thumbnail for given model and returns it as SVG string."""
-    corpus: np.ndarray = np.array(list(corpus))
-    alphabetical = np.vectorize(is_alpha)(corpus)
-    if corpus.shape[0] > 30:
-        corpus = corpus[alphabetical]
-    n_vocab = corpus.shape[0]
-    n_top = min(n_vocab, 100)
-    random_word_indices = np.random.randint(0, n_vocab, size=n_top)
-    random_freqs = np.random.randint(0, 100, size=n_top)
+    if corpus is None:
+        return create_random_scatter()
+    corpus_sample = sample(list(corpus), 200)
+    corpus_joint = " ".join(corpus_sample)
     colormap = COLORMAPS[np.random.randint(0, len(COLORMAPS))]
-    word_freqs = {
-        corpus[index]: freq
-        for index, freq in zip(random_word_indices, random_freqs)
-    }
     cloud = WordCloud(
         width=800, height=600, background_color="white", colormap=colormap
     )
-    cloud.generate_from_frequencies(word_freqs)
+    cloud.generate(corpus_joint)
     return cloud.to_svg()

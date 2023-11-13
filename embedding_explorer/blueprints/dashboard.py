@@ -5,8 +5,7 @@ from urllib.parse import quote
 import dash_mantine_components as dmc
 from dash_extensions.enrich import DashBlueprint, dash, html
 
-from embedding_explorer.blueprints.explorer import create_explorer
-from embedding_explorer.cards import Card
+from embedding_explorer.cards import Card, ClusteringCard
 from embedding_explorer.components.model_card import create_card
 
 
@@ -25,15 +24,17 @@ def create_dashboard(cards: List[Card]):
     # Collecting cards and registering pages
     card_components = []
     pages = {}
-    for model_params in cards:
-        page = create_explorer(**model_params)
+    for card in cards:
+        page = card.get_page()
+        if isinstance(card, ClusteringCard):
+            corpus = None
+        else:
+            corpus = card["corpus"]
         card_components.append(
-            create_card(
-                corpus=model_params["corpus"], model_name=model_params["name"]
-            )
+            create_card(corpus=corpus, model_name=card["name"])
         )
         page.register_callbacks(dashboard)
-        pages[model_params["name"]] = page.layout
+        pages[card["name"]] = page.layout
 
     dashboard.layout = html.Div(
         children=[
