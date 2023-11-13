@@ -6,7 +6,7 @@ line-length=79
 
 [tool.poetry]
 name = "embedding-explorer"
-version = "0.5.0"
+version = "0.5.1"
 description = "Tools for interactive visual inspection of semantic embeddings."
 authors = ["Márton Kardos <power.up1163@gmail.com>"]
 license = "MIT"
