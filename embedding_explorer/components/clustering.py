@@ -4,8 +4,14 @@ from typing import Dict, List, Optional, Union
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
-                                    exceptions)
+from dash_extensions.enrich import (
+    DashBlueprint,
+    Input,
+    Output,
+    State,
+    dcc,
+    exceptions,
+)
 
 
 def create_cluster_map(
@@ -57,6 +63,7 @@ def create_cluster_map(
             params["size"] = marker_size
         if marker_label != "none":
             params["text"] = marker_label
+            data[marker_label] = data[marker_label].fillna("")
         if hover_name is not None:
             params["hover_name"] = hover_name
         if hover_data is not None:
