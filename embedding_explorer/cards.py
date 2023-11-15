@@ -13,6 +13,8 @@ from embedding_explorer.blueprints.explorer import create_explorer
 
 
 class Card(ABC, Mapping):
+    """Abstract Base Class for Cards in the Dashboard."""
+
     def __getitem__(self, key: str):
         return getattr(self, key)
 
@@ -28,6 +30,7 @@ class Card(ABC, Mapping):
 
     @abstractmethod
     def get_page(self) -> DashBlueprint:
+        """Get the Blueprint of the page for the card."""
         pass
 
 
@@ -78,6 +81,27 @@ class ClusteringCard(Card):
 
     Parameters
     ----------
+    corpus: iterable of string, optional
+        Texts you intend to cluster.
+    vectorizer: TransformerMixin, optional
+        Model to vectorize texts with.
+    embeddings: ndarray of shape (n_corpus, n_features), optional
+        Embeddings of the texts in the corpus.
+        If not supplied, texts will be encoded with the vectorizer
+    metadata: DataFrame, optional
+        Metadata about the corpus or the embeddings.
+        This is useful for filtering data points or
+        changing visual properties of the main figure.
+    hover_name: str, optional
+        Title to display when hovering on a data point.
+        Has to be the name of a column in the metadata.
+    hover_data: list[str] or dict[str, bool], optional
+        Additional data to display when hovering on a data point.
+        Has to be a list of column names in the metadata,
+        or a mapping of column names to booleans.
+    port: int
+        Port for the app to run on.
+
     """
 
     name: str

@@ -3,7 +3,7 @@ import subprocess
 import sys
 import threading
 import time
-from typing import Callable, Dict, Iterable, List, Optional
+from typing import Callable, Iterable, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -153,6 +153,37 @@ def show_clustering(
     hover_data=None,
     port: int = 8050,
 ) -> Optional[threading.Thread]:
+    """Start embedding clustering and projection app.
+
+    Parameters
+    ----------
+    corpus: iterable of string, optional
+        Texts you intend to cluster.
+    vectorizer: TransformerMixin, optional
+        Model to vectorize texts with.
+    embeddings: ndarray of shape (n_corpus, n_features), optional
+        Embeddings of the texts in the corpus.
+        If not supplied, texts will be encoded with the vectorizer
+    metadata: DataFrame, optional
+        Metadata about the corpus or the embeddings.
+        This is useful for filtering data points or
+        changing visual properties of the main figure.
+    hover_name: str, optional
+        Title to display when hovering on a data point.
+        Has to be the name of a column in the metadata.
+    hover_data: list[str] or dict[str, bool], optional
+        Additional data to display when hovering on a data point.
+        Has to be a list of column names in the metadata,
+        or a mapping of column names to booleans.
+    port: int
+        Port for the app to run on.
+
+    Returns
+    -------
+    Thread or None
+        If the app runs in a Jupyter notebook, work goes on on
+        a background thread, this thread is returned.
+    """
     blueprint = create_clustering_app(
         corpus=corpus,
         vectorizer=vectorizer,
