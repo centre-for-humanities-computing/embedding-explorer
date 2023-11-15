@@ -3,6 +3,8 @@
 # embedding-explorer
 Tools for interactive visual exploration of semantic embeddings.
 
+[Documentation](https://centre-for-humanities-computing.github.io/embedding-explorer/index.html)
+
 ## Installation
 
 Install embedding-explorer from PyPI:
@@ -11,12 +13,12 @@ Install embedding-explorer from PyPI:
 pip install embedding-explorer
 ```
 
-## Semantic Explorer
+## [Semantic Explorer](https://centre-for-humanities-computing.github.io/embedding-explorer/semantic_networks.html)
 
 embedding-explorer comes with a web application built for exploring semantic relations in a corpus with the help of embeddings.
 In this section I will show a couple of examples of running the app with different embedding models and corpora.
 
-### Static Word Embeddings
+### [Static Word Embeddings](https://centre-for-humanities-computing.github.io/embedding-explorer/semantic_networks.html#exploring-associations-in-static-word-embedding-models)
 Let's say that you would like to explore semantic relations by investigating word embeddings generated with Word2Vec.
 You can do this by passing the vocabulary of the model and the embedding matrix to embedding-explorer.
 
@@ -42,7 +44,7 @@ like to see on the screen.
 
 ![Screenshot of the Explorer](assets/glove_screenshot.png)
 
-## Dynamic Embedding Models
+## [Dynamic Embedding Models](https://centre-for-humanities-computing.github.io/embedding-explorer/semantic_networks.html#exploring-corpora-with-dynamic-embedding-models)
 
 If you want to explore relations in a corpus using let's say a sentence transformer, which creates contextually aware embeddings,
 you can do so by specifying a scikit-learn compatible vectorizer model instead of passing along an embedding matrix.
@@ -81,7 +83,7 @@ show_network_explorer(corpus=four_grams, vectorizer=model)
 
 ![Screenshot of the Explorer](assets/trf_screenshot.png)
 
-## Projection and Clustering
+## [Projection and Clustering](https://centre-for-humanities-computing.github.io/embedding-explorer/projection_clustering.html#projection-and-clustering)
 :star2: New in version 0.5.0 
 
 In embedding-explorer you can now inspect corpora or embeddings by projecting them into 2D space,
@@ -112,7 +114,7 @@ After this you can investigate the semantic structure of your corpus interactive
 
 ![Screenshot of the Clustering](assets/clustering_app.png)
 
-## Dashboard
+## [Dashboard](https://centre-for-humanities-computing.github.io/embedding-explorer/dashboards.html)
 
 If you have multiple models to examine the same corpus or multiple corpora, that you want to examine with the same model, then
 you can create a dashboard containing all of these options, that users will be able to click on and that takes them to the appropriate explorer page.
@@ -134,8 +136,3 @@ show_dashboard(cards)
 ```
 
 ![Screenshot of the Dashboard](assets/dashboard_screenshot.png)
-
-
-## Documentation
-Thorough documentation and API reference of embedding-explorer is currently under development,
-until then we do not recommend its usage in production for third parties.
