@@ -174,6 +174,52 @@ def create_clustering_settings(name):
             minRows=2,
             id="{}_projection_params".format(name),
         ),
+        html.Div(
+            [
+                dmc.Text("Export Settings"),
+                dmc.Text(
+                    "Choose export settings for the image.",
+                    size="sm",
+                    weight=400,
+                    color="dimmed",
+                ),
+            ]
+        ),
+        dmc.NumberInput(
+            label="Export Width",
+            description="Width of the exported image.",
+            value=1000,
+            min=100,
+            step=1,
+            stepHoldDelay=500,
+            stepHoldInterval=100,
+            id="{}_export_width".format(name),
+            size="md",
+            className="mb-3",
+        ),
+        dmc.NumberInput(
+            label="Export Height",
+            description="Height of the exported image.",
+            value=800,
+            min=100,
+            step=1,
+            stepHoldDelay=500,
+            stepHoldInterval=100,
+            id="{}_export_height".format(name),
+            size="md",
+            className="mb-3",
+        ),
+        dmc.NumberInput(
+            label="Scale",
+            description="Factor to scale the image resolution with.",
+            value=1,
+            min=0.05,
+            step=0.05,
+            precision=2,
+            id="{}_export_scale".format(name),
+            size="md",
+            className="mb-3",
+        ),
         html.Button(
             "Submit",
             className="""

@@ -1,4 +1,5 @@
 """Blueprint for the clustering application."""
+
 import warnings
 from typing import Iterable, Optional
 
@@ -90,6 +91,21 @@ def create_clustering_app(
             fixed w-full h-full flex-col flex items-stretch p-8
         """,
         id="clustering_container",
+    )
+    app_blueprint.clientside_callback(
+        """
+        function(width, height, scale) {
+            const newConfig = {
+                toImageButtonOptions: {height: height, width: width, scale: scale},
+            };
+            return newConfig;
+        }
+        """,
+        Output(f"{name}_cluster_map", "config"),
+        Input(f"{name}_export_width", "value"),
+        Input(f"{name}_export_height", "value"),
+        Input(f"{name}_export_scale", "value"),
+        prevent_initial_callback=False,
     )
     app_blueprint.clientside_callback(
         """
@@ -220,4 +236,5 @@ def create_clustering_app(
     # --------[ Registering callbacks ]--------
     for blueprint in blueprints:
         blueprint.register_callbacks(app_blueprint)
+
     return app_blueprint

@@ -1,9 +1,11 @@
 """Blueprint for the main application."""
+
 from typing import Iterable, Optional
 
 import dash_mantine_components as dmc
 import numpy as np
-from dash_extensions.enrich import DashBlueprint, dcc, html
+from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
+                                    html)
 from sklearn.base import BaseEstimator
 
 from embedding_explorer.components.network import create_network
@@ -111,7 +113,76 @@ def create_explorer(
                                     ),
                                 ],
                                 value="search",
-                            )
+                            ),
+                        ],
+                    ),
+                    dmc.Accordion(
+                        chevronPosition="right",
+                        variant="contained",
+                        children=[
+                            dmc.AccordionItem(
+                                [
+                                    dmc.AccordionControl(
+                                        html.Div(
+                                            [
+                                                dmc.Text("Export Settings"),
+                                                dmc.Text(
+                                                    "Set settings for image export.",
+                                                    size="sm",
+                                                    weight=400,
+                                                    color="dimmed",
+                                                ),
+                                            ]
+                                        )
+                                    ),
+                                    dmc.AccordionPanel(
+                                        [
+                                            dmc.NumberInput(
+                                                label="Export Width",
+                                                description="Width of the exported image.",
+                                                value=1000,
+                                                min=100,
+                                                step=1,
+                                                stepHoldDelay=500,
+                                                stepHoldInterval=100,
+                                                id="{}_export_width".format(
+                                                    name
+                                                ),
+                                                size="md",
+                                                className="mb-3",
+                                            ),
+                                            dmc.NumberInput(
+                                                label="Export Height",
+                                                description="Height of the exported image.",
+                                                value=800,
+                                                min=100,
+                                                step=1,
+                                                stepHoldDelay=500,
+                                                stepHoldInterval=100,
+                                                id="{}_export_height".format(
+                                                    name
+                                                ),
+                                                size="md",
+                                                className="mb-3",
+                                            ),
+                                            dmc.NumberInput(
+                                                label="Scale",
+                                                description="Factor to scale the image resolution with.",
+                                                value=1,
+                                                min=0.05,
+                                                step=0.05,
+                                                precision=2,
+                                                id="{}_export_scale".format(
+                                                    name
+                                                ),
+                                                size="md",
+                                                className="mb-3",
+                                            ),
+                                        ]
+                                    ),
+                                ],
+                                value="search",
+                            ),
                         ],
                     ),
                     html.Button(
@@ -145,4 +216,21 @@ def create_explorer(
     # --------[ Registering callbacks ]--------
     for blueprint in blueprints:
         blueprint.register_callbacks(app_blueprint)
+
+    app_blueprint.clientside_callback(
+        """
+        function(width, height, scale) {
+            const newConfig = {
+                toImageButtonOptions: {height: height, width: width, scale: scale},
+                scrollZoom: true,
+            };
+            return newConfig;
+        }
+        """,
+        Output(f"{name}_network", "config"),
+        Input(f"{name}_export_width", "value"),
+        Input(f"{name}_export_height", "value"),
+        Input(f"{name}_export_scale", "value"),
+        prevent_initial_callback=False,
+    )
     return app_blueprint
