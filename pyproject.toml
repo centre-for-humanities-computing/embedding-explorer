@@ -6,7 +6,7 @@ line-length=79
 
 [tool.poetry]
 name = "embedding-explorer"
-version = "0.5.2"
+version = "0.5.3"
 description = "Tools for interactive visual inspection of semantic embeddings."
 authors = ["Márton Kardos <power.up1163@gmail.com>"]
 license = "MIT"
@@ -15,11 +15,11 @@ packages = [{include = "embedding_explorer"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8.0"
-dash = "^2.11.1"
-plotly = "^5.14.0"
-dash-extensions = "^0.1.10"
-dash-mantine-components = "^0.11.1"
-dash-iconify = "^0.1.2"
+dash = "~2.11.1"
+plotly = "~5.14.0"
+dash-extensions = "~0.1.10"
+dash-mantine-components = "~0.11.1"
+dash-iconify = "~0.1.2"
 scikit-learn = "^1.1.0"
 numpy = ">=1.23.0"
 pandas = ">=1.5.2"
