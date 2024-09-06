@@ -5,6 +5,18 @@ Tools for interactive visual exploration of semantic embeddings.
 
 [Documentation](https://centre-for-humanities-computing.github.io/embedding-explorer/index.html)
 
+### New in version 0.6.0
+
+You can now pass a custom Neofuzz process to the explorer if you have specific requirements.
+
+```python
+from embedding_explorer import show_network_explorer
+from neofuzz import char_ngram_process
+
+process = char_ngram_process()
+show_network_explorer(corpus=corpus, embeddings=embeddings, fuzzy_search=process)
+```
+
 ## Installation
 
 Install embedding-explorer from PyPI:
