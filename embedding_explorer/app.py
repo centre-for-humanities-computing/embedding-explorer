@@ -3,11 +3,12 @@ import subprocess
 import sys
 import threading
 import time
-from typing import Callable, Iterable, List, Optional
+from typing import Callable, Iterable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
 from dash_extensions.enrich import Dash, DashBlueprint
+from neofuzz import Process
 from sklearn.base import BaseEstimator
 
 from embedding_explorer.blueprints.clustering import create_clustering_app
@@ -103,7 +104,7 @@ def show_network_explorer(
     vectorizer: Optional[BaseEstimator] = None,
     embeddings: Optional[np.ndarray] = None,
     port: int = 8050,
-    fuzzy_search: bool = False,
+    fuzzy_search: Union[bool, Process] = False,
 ) -> Optional[threading.Thread]:
     """Visually inspect semantic networks emerging in an embedding model.
 
@@ -122,11 +123,12 @@ def show_network_explorer(
         the vectorizer.
     port: int
         Port for the app to run on.
-    fuzzy_search: bool, default False
+    fuzzy_search: bool or Process, default False
         Specifies whether you want to fuzzy search in the vocabulary.
-        This is recommended for production use, but the index takes
-        time to set up, therefore the startup time is expected to
-        be greater.
+        When False, no fuzzy search is used in the app.
+        When True, an n-gram process is used from Neofuzz.
+        When a neofuzz Process is passed, that process will be used to
+        retrieve fuzzy search results.
 
     Returns
     -------

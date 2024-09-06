@@ -1,11 +1,12 @@
 """Blueprint for the main application."""
 
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 
 import dash_mantine_components as dmc
 import numpy as np
 from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
                                     html)
+from neofuzz import Process
 from sklearn.base import BaseEstimator
 
 from embedding_explorer.components.network import create_network
@@ -17,7 +18,7 @@ def create_explorer(
     vectorizer: Optional[BaseEstimator] = None,
     embeddings: Optional[np.ndarray] = None,
     name: str = "",
-    fuzzy_search: bool = False,
+    fuzzy_search: Union[bool, Process] = False,
 ) -> DashBlueprint:
     print(f"Creating explorer with name: {name}")
     # Checking parameters

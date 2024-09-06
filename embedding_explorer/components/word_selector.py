@@ -1,17 +1,11 @@
 """Code for the word selector component."""
-from typing import List, Optional, Union
+
+from typing import Iterable, List, Optional, Union
 
 import dash_mantine_components as dmc
 import numpy as np
-from dash_extensions.enrich import (
-    DashBlueprint,
-    Input,
-    Output,
-    State,
-    dcc,
-    exceptions,
-    html,
-)
+from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
+                                    exceptions, html)
 from neofuzz import Process
 from sklearn.base import BaseEstimator
 from sklearn.decomposition import NMF
@@ -30,36 +24,44 @@ class DummyProcess:
     def query(self, search_terms, limit):
         return np.array([]), np.array([])
 
+    def index(self, options: Iterable[str]):
+        pass
+
 
 def create_word_selector(
     corpus: np.ndarray,
     vectorizer: Optional[BaseEstimator],
     model_name: str = "",
-    fuzzy_search: bool = False,
+    fuzzy_search: Union[bool, Process] = False,
 ) -> DashBlueprint:
     """Creates word selector component blueprint."""
     word_selector = DashBlueprint()
     vocab_lookup = {word: index for index, word in enumerate(corpus)}
-    if fuzzy_search:
-        print("Indexing vocabulary for fuzzy search")
-        if vectorizer is None:
-            fuzzy_vectorizer = make_pipeline(
-                TfidfVectorizer(
-                    analyzer="char", ngram_range=(1, 4), max_features=20_000
-                ),
-                NMF(n_components=25),
+    if isinstance(fuzzy_search, bool):
+        if fuzzy_search:
+            if vectorizer is None:
+                fuzzy_vectorizer = make_pipeline(
+                    TfidfVectorizer(
+                        analyzer="char",
+                        ngram_range=(1, 4),
+                        max_features=20_000,
+                    ),
+                    NMF(n_components=25),
+                )
+            else:
+                fuzzy_vectorizer = vectorizer
+            fuzzy_process = Process(
+                fuzzy_vectorizer,
+                metric="cosine",
+                low_memory=True,
             )
         else:
-            fuzzy_vectorizer = vectorizer
-        fuzzy_process = Process(
-            fuzzy_vectorizer,
-            metric="cosine",
-            low_memory=True,
-        )
-        fuzzy_process.index(corpus)
-        print("Indexing done")
+            fuzzy_process = DummyProcess()
     else:
-        fuzzy_process = DummyProcess()
+        fuzzy_process = fuzzy_search
+    print("Indexing vocabulary for fuzzy search")
+    fuzzy_process.index(corpus)
+    print("Indexing done.")
 
     search_bar = dcc.Dropdown(
         # label="Seeds",
@@ -130,9 +132,9 @@ def create_word_selector(
             return [exact_match] + selected_options
         # Fuzzy finding 5 closest
         fuzzy_indices, _ = fuzzy_process.query(
-            search_terms=[search_value], limit=5
+            search_terms=[search_value], limit=30
         )
-        fuzzy_indices = np.ravel(fuzzy_indices)
+        fuzzy_indices = np.ravel(fuzzy_indices)[:5]
         # Collecting options
         fuzzy_matches = [
             Option(value=index, label=corpus[index], search=search_value)

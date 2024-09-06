@@ -1,10 +1,12 @@
 """Component code of the network graph."""
+
 from typing import List, Optional, Union
 
 import numpy as np
 import plotly.graph_objects as go
 from dash_extensions.enrich import (DashBlueprint, Input, Output, State, dcc,
                                     exceptions)
+from neofuzz import Process
 from sklearn.base import BaseEstimator
 
 from embedding_explorer.plots.network import plot_semantic_kernel
@@ -16,7 +18,7 @@ def create_network(
     embeddings: np.ndarray,
     vectorizer: Optional[BaseEstimator],
     model_name: str = "",
-    fuzzy_search: bool = False,
+    fuzzy_search: Union[bool, Process] = False,
 ) -> DashBlueprint:
     """Creates Network component blueprint."""
     network = DashBlueprint()
